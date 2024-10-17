@@ -49,7 +49,7 @@ const ListAssignmentsPage = () => {
     return (
       <div className="text-3xl font-bold h-screen flex flex-col justify-center items-center ">
         <img src={LoadingGif} alt="Loading..." className="w-52" />
-        <p className="text-xl font-semibold">Loading users...</p>
+        <p className="text-xl font-semibold">Loading assignment...</p>
       </div>
     );
   }
