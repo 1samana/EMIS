@@ -13,6 +13,7 @@ import ListAllRolesPage from "./pages/ListAllRolesPage";
 import CreateNoticePage from "./pages/CreateNoticePage";
 import ListAllAssignmentPage from "./pages/ListAllAssignmentPage";
 import CreateAssignmentPage from "./pages/CreateAssignmentPage";
+import CreateAttendacePage from "./pages/CreateAttendancePage";
 function App() {
   return (
     <>
@@ -104,6 +105,14 @@ function App() {
           element={
             <PrivateRoute>
               <CreateAssignmentPage/>
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/create-attendance"
+          element={
+            <PrivateRoute>
+              <CreateAttendacePage/>
             </PrivateRoute>
           }
         />
