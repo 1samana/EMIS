@@ -167,26 +167,20 @@ const Sidebar = () => {
             >
               <FaClipboardList className="mr-3" /> Attendance
             </Link>
-<<<<<<< HEAD
+
             <Link
               to="/create-attendance"
               className="flex items-center hover:bg-blue-500 hover:text-white p-2 rounded-lg transition-colors"
             >
               <FaClipboardList className="mr-3" /> Create Attendance
             </Link>
-=======
->>>>>>> ba97ef0acec2ad7652e1213011619b510ca174ad
 
             <button
               onClick={handleAssignmentToggle}
               className="flex items-center justify-between hover:bg-blue-500 hover:text-white p-2 rounded-lg transition-colors"
             >
               <div className="flex items-center">
-<<<<<<< HEAD
-                <FiBell className="mr-3" /> Assignments
-=======
                 <FiBell className="mr-3" /> Assignment
->>>>>>> ba97ef0acec2ad7652e1213011619b510ca174ad
               </div>
               {assignmentOpen ? (
                 <MdArrowDropUp className="text-xl" />
@@ -216,7 +210,7 @@ const Sidebar = () => {
               to="/settings"
               className="flex items-center hover:bg-blue-500 hover:text-white p-2 rounded-lg transition-colors"
             >
-              <FaCog className="mr-3" /> Settings
+              <FaCog className="mr-3" /> Setting
             </Link>
           </nav>
         </div>
