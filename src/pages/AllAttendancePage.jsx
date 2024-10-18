@@ -11,18 +11,13 @@ import {
   Text,
   Button,
   Input,
-  Spinner,
-  Alert,
-  AlertIcon,
   useToast,
 } from "@chakra-ui/react";
 import Sidebar from "../components/Sidebar";
 import Topbar from "../components/Topbar";
-import { Legend } from "chart.js";
 
 const AllAttendancePage = () => {
   const [attendanceData, setAttendanceData] = useState([]);
-  // const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [userID, setUserID] = useState("");
   const [subjectID, setSubjectID] = useState("");
@@ -37,23 +32,19 @@ const AllAttendancePage = () => {
       Authorization: `Bearer ${token.access}`,
     },
   };
-  
+
   const fetchAttendanceData = async () => {
     try {
       const response = await axios.get(
         "/proxy/roles/attendance/getdata/",
         config
       );
-      console.log("Response from API:", response);
       if (Array.isArray(response.data)) {
         setAttendanceData(response.data);
       }
-      // setAttendanceData(Array.isArray(response.data) ? response.data : []);
       setError("");
     } catch (error) {
       setError("Failed to fetch attendance data.");
-    } finally {
-      // setLoading(false);
     }
   };
 
@@ -67,7 +58,6 @@ const AllAttendancePage = () => {
       return;
     }
 
-    // setLoading(true);
     try {
       const response = await axios.get(
         `/proxy/roles/attendance/getdata/?userID=${userID}`,
@@ -76,13 +66,7 @@ const AllAttendancePage = () => {
       setAttendanceData(response.data);
       setError("");
     } catch (error) {
-      toast({
-        title: "Failed to fetch attendance data for the user.",
-        status: "error",
-        duration: 3000,
-        position: "top-right",
-        isClosable: true,
-      });
+      setError("Failed to fetch student attendance.");
     }
   };
 
@@ -102,7 +86,6 @@ const AllAttendancePage = () => {
         position: "top-right",
         isClosable: true,
       });
-      return;
     }
   };
 
@@ -136,36 +119,68 @@ const AllAttendancePage = () => {
         `/proxy/roles/attendance/getdata/?subjectID=${subjectID}&userID=${userID}`,
         config
       );
-
-      console.log(response.data);
       setAttendanceData(response.data);
     } catch (error) {
       console.log(error);
     }
   };
 
-  // if (loading) {
-  //   return <Spinner size="xl" />;
-  // }
+  // Function to handle attendance update
+  const updateAttendance = async (record) => {
+    const newStatus = record.status === "True" ? "False" : "True";
+    try {
+      await axios.put(
+        `/proxy/roles/attendance/editAttendance/${record.id}/`,
+        {
+          status: newStatus,
+          date: record.date,
+        },
+        config
+      );
 
-  if (error) {
-    toast({
-      title: error,
-      status: "error",
-      duration: 3000,
-      position: "top-right",
-      isClosable: true,
-    });
-    return;
-  }
+      toast({
+        title: "Attendance updated successfully!",
+        status: "success",
+        duration: 3000,
+        position: "top-right",
+        isClosable: true,
+      });
+    } catch (error) {
+      toast({
+        title: "Failed to update attendance.",
+        status: "error",
+        duration: 3000,
+        position: "top-right",
+        isClosable: true,
+      });
+    }
+  };
 
-  const semester =
-    attendanceData.length > 0 ? attendanceData[0].faculty_batch_sem : "";
-  const subject = attendanceData.length > 0 ? attendanceData[0].subject : "";
-  const date =
-    attendanceData.length > 0 ? new Date(attendanceData[0].date) : null;
-  const year = date ? date.getFullYear() : "";
-  const month = date ? date.toLocaleString("default", { month: "long" }) : "";
+  const deleteAttendance = async (recordID) => {
+    try {
+      await axios.delete(`/proxy/roles/attendance/deleteAttendance/`, {
+        data: { id: recordID },
+        headers: config.headers,
+      });
+
+      fetchAttendanceData();
+      toast({
+        title: "Attendance deleted successfully!",
+        status: "success",
+        duration: 3000,
+        position: "top-right",
+        isClosable: true,
+      });
+    } catch (error) {
+      toast({
+        title: "Failed to delete attendance.",
+        status: "error",
+        duration: 3000,
+        position: "top-right",
+        isClosable: true,
+      });
+    }
+  };
 
   return (
     <Box display="flex" height="100vh" backgroundColor="transparent">
@@ -270,15 +285,6 @@ const AllAttendancePage = () => {
             </Box>
           </Box>
 
-          <Box mb="4">
-            {/* <Text fontSize="xl" fontWeight="bold">
-              Semester: {semester} | Subject: {subject}
-            </Text> */}
-            <Text fontSize="xl" fontWeight="bold">
-              Year: {year} | Month: {month}
-            </Text>
-          </Box>
-
           <Table
             variant="striped"
             colorScheme="gray"
@@ -302,6 +308,9 @@ const AllAttendancePage = () => {
                 </Th>
                 <Th color="white" borderColor="gray.300" borderWidth="1px">
                   Status
+                </Th>
+                <Th color="white" borderColor="gray.300" borderWidth="1px">
+                  Actions
                 </Th>
               </Tr>
             </Thead>
@@ -327,7 +336,6 @@ const AllAttendancePage = () => {
                           <Td borderColor="gray.300" borderWidth="1px">
                             {record.status === "True" ? (
                               <span className="text-green-500 font-semibold">
-                                {" "}
                                 Present
                               </span>
                             ) : (
@@ -336,6 +344,23 @@ const AllAttendancePage = () => {
                               </span>
                             )}
                           </Td>
+                          <Td borderColor="gray.300" borderWidth="1px">
+                            <Button
+                              size="sm"
+                              colorScheme="blue"
+                              mr="2"
+                              onClick={() => updateAttendance(record)}
+                            >
+                              Update
+                            </Button>
+                            <Button
+                              size="sm"
+                              colorScheme="red"
+                              onClick={() => deleteAttendance(record.userID)}
+                            >
+                              Delete
+                            </Button>
+                          </Td>
                         </Tr>
                       ))}
                   </React.Fragment>
@@ -343,7 +368,7 @@ const AllAttendancePage = () => {
               ) : (
                 <Tr>
                   <Td
-                    colSpan="5"
+                    colSpan="6"
                     textAlign="center"
                     borderColor="gray.300"
                     borderWidth="1px"
