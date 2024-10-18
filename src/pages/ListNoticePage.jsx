@@ -25,15 +25,15 @@ import {
 import Sidebar from "../components/Sidebar";
 import Topbar from "../components/Topbar";
 
-const BASE_URL = "http://10.5.15.11:8000"; // Update this as per your setup
+const BASE_URL = "http://10.5.15.11:8000"; 
 
 const ListNoticePage = () => {
   const [notices, setNotices] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [facultyBatchSemId, setFacultyBatchSemId] = useState("");
-  const [selectedNotice, setSelectedNotice] = useState(null); // Track selected notice
-  const { isOpen, onOpen, onClose } = useDisclosure(); // Modal hooks
+  const [selectedNotice, setSelectedNotice] = useState(null);
+  const { isOpen, onOpen, onClose } = useDisclosure(); 
   const toast = useToast();
 
   const fetchNotices = async (semesterId) => {
@@ -52,10 +52,10 @@ const ListNoticePage = () => {
           config
         );
 
-        console.log("API Response:", response.data); // Log the API response
+        console.log("API Response:", response.data);
 
         if (Array.isArray(response.data)) {
-          setNotices(response.data); // Set notices to the response data if it is an array
+          setNotices(response.data); 
         } else {
           console.error("Expected an array, but got:", response.data);
           setNotices([]);
@@ -90,8 +90,8 @@ const ListNoticePage = () => {
   };
 
   const handleViewNotice = (notice) => {
-    setSelectedNotice(notice); // Set the selected notice
-    onOpen(); // Open the modal
+    setSelectedNotice(notice); 
+    onOpen(); 
   };
 
   useEffect(() => {
@@ -186,12 +186,11 @@ const ListNoticePage = () => {
     bg="white"
     p="6"
     textAlign="center"
-    maxW="650px"  // Increase modal width slightly for better spacing
+    maxW="650px"  
     mx="auto"
-    boxShadow="xl"  // Add a subtle shadow for depth
+    boxShadow="xl"  
   >
     <ModalHeader position="relative">
-      {/* Close button at the top-right corner */}
       <CloseButton
         position="absolute"
         right="8px"
@@ -204,12 +203,10 @@ const ListNoticePage = () => {
     <ModalBody>
       {selectedNotice && (
         <>
-          {/* Notice Title */}
           <Text fontSize="3xl" fontWeight="bold" color="blue.600" mb="3">
             {selectedNotice.noticeName}
           </Text>
 
-          {/* Image with a subtle border and shadow */}
           <Box
             border="2px"
             borderColor="gray.200"
@@ -221,15 +218,14 @@ const ListNoticePage = () => {
             <Image
               src={`${BASE_URL}${selectedNotice.ImageFile}`}
               alt="Notice Image"
-              maxW="100%"  // Ensures the image doesn't overflow the modal width
-              maxH="400px"  // Set a max height to prevent the image from being too tall
-              objectFit="contain"  // Adjusts image scaling to fit within its container
+              maxW="100%"  
+              maxH="400px"  
+              objectFit="contain"  
               mx="auto"
-              borderRadius="md"  // Add rounded corners for a softer look
+              borderRadius="md"  
             />
           </Box>
 
-          {/* Additional Details */}
           <Text fontSize="lg" fontWeight="semibold" mb="2">
             Semester:{" "}
             <Text as="span" fontWeight="normal">
