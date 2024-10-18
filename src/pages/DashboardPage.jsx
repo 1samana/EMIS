@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Line, Doughnut, Pie, Bar } from "react-chartjs-2";
+import { Link } from "react-router-dom";
 import {
   Chart as ChartJS,
   ArcElement,
@@ -240,10 +241,22 @@ const DashboardPage = () => {
       },
     ],
   };
+  const handleChartClick = (event, elements) => {
+    if (elements.length > 0) {
+      const chartElement = elements[0];
+      const index = chartElement.index;
+  
+      if (doughnutData.labels[index] === "Teachers") {
+        window.location.href = "/user/list";
+      }
+      if (doughnutData.labels[index] === "Students") {
+        window.location.href = "/user/list";
+      }
+    }
+  };
 
-  const totalUsers = teachersCount + studentsCount; // Calculate total users
+  const totalUsers = teachersCount + studentsCount; 
 
-  //creating the data set for the notice chart
   const semesterNoticesData = [
     semFirstNotice,
     semSecondNotice,
@@ -337,7 +350,7 @@ const DashboardPage = () => {
     ],
     datasets: [
       {
-        label: "Number of Students Present",
+        label: "Percentage of students present",
         data: [
           attendancePercentageFirstSem,
           attendancePercentageSecondSem,
@@ -377,8 +390,8 @@ const DashboardPage = () => {
           {/* <h2 className="text-xl font-semibold mb-6">Dashboard Overview</h2> */}
           <div className="grid grid-cols-3 gap-6 mb-6">
             {/* Total Users Card */}
-            <div className="bg-white p-6 rounded-l-lg shadow-md border-r-2 border-blue-500 flex justify-between items-center">
-              <div>
+            <Link to="/user/list" className="bg-white p-6 rounded-lg shadow-md border-r-2 border-blue-500 flex justify-between items-center">
+             <div>
                 <h3 className="text-sm font-semibold">Total Users</h3>
                 <p className="text-3xl font-bold">{totalUsers}</p>{" "}
               </div>
@@ -391,10 +404,10 @@ const DashboardPage = () => {
                   Students: {studentsCount}
                 </p>
               </div>
-            </div>
+            </Link>
 
-            <div className="bg-white p-6 rounded-l-lg shadow-md border-r-2 border-yellow-500 flex justify-between items-center">
-              <div>
+            <Link to="/list/complaints" className="bg-white p-6 rounded-lg shadow-md border-r-2 border-blue-500 flex justify-between items-center">
+            <div>
                 <h3 className="text-sm font-semibold">Total Complaints</h3>
                 <p className="text-3xl font-bold">{totalComplaints}</p>
               </div>
@@ -406,9 +419,9 @@ const DashboardPage = () => {
                   Unsolved: {unsolvedComplaints}
                 </p>
               </div>
-            </div>
+              </Link>
 
-            <div className="bg-white p-6 rounded-l-lg shadow-md border-r-2 border-red-500 flex justify-between">
+              <Link to="/list-notice" className="bg-white p-6 rounded-lg shadow-md border-r-2 border-blue-500 flex justify-between items-center">
               <div>
                 <h3 className="text-sm font-semibold">Total Notices</h3>
                 <p className="text-3xl font-bold">{totalNotices}</p>{" "}
@@ -424,7 +437,8 @@ const DashboardPage = () => {
                 <p className="text-sm text-gray-500">VII: {semSeventhNotice}</p>
                 <p className="text-sm text-gray-500">VIII: {semEighthNotice}</p>
               </div>
-            </div>
+          
+          </Link>
           </div>
 
           <div className="grid grid-cols-2 gap-6  ">
@@ -439,7 +453,13 @@ const DashboardPage = () => {
             <div className="bg-white rounded-lg shadow-md p-4">
               <h3 className="text-lg font-semibold mb-4">Users Overview</h3>
               <div className="h-64">
-                <Doughnut data={doughnutData} options={chartOptions} />
+              <Doughnut
+  data={doughnutData}
+  options={{
+    ...chartOptions,
+    onClick: (event, elements) => handleChartClick(event, elements),
+  }}
+/>
               </div>
             </div>
 
