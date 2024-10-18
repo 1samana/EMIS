@@ -14,6 +14,9 @@ import CreateNoticePage from "./pages/CreateNoticePage";
 import ListAllAssignmentPage from "./pages/ListAllAssignmentPage";
 import CreateAssignmentPage from "./pages/CreateAssignmentPage";
 import CreateAttendacePage from "./pages/CreateAttendancePage";
+import CreateQuestionPage from "./pages/CreateQuestionPage";
+import DisplayQnAPage from "./pages/DisplayQnAPage";
+
 function App() {
   return (
     <>
@@ -104,7 +107,7 @@ function App() {
           path="/create-assignment"
           element={
             <PrivateRoute>
-              <CreateAssignmentPage/>
+              <CreateAssignmentPage />
             </PrivateRoute>
           }
         />
@@ -112,7 +115,24 @@ function App() {
           path="/create-attendance"
           element={
             <PrivateRoute>
-              <CreateAttendacePage/>
+              <CreateAttendacePage />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/create-qna"
+          element={
+            <PrivateRoute>
+              <CreateQuestionPage />
+            </PrivateRoute>
+          }
+        />
+
+        <Route
+          path="/list-qna"
+          element={
+            <PrivateRoute>
+              <DisplayQnAPage />
             </PrivateRoute>
           }
         />

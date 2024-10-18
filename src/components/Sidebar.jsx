@@ -22,7 +22,6 @@ import { AiOutlineNotification } from "react-icons/ai";
 import { FiBell } from "react-icons/fi";
 import { Link } from "react-router-dom";
 import CreateUserPage from "../pages/CreateUserPage";
-import { AuthContext } from "../context/AuthContext";
 import { IoMdAlert } from "react-icons/io";
 
 const Sidebar = () => {
@@ -30,6 +29,7 @@ const Sidebar = () => {
   const [noticeOpen, setNoticeOpen] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [assignmentOpen, setAssignmentOpen] = useState(false);
+  const [qnaOpen, setQnaOpen] = useState(false); // State for QnA section
 
   // Toggle for activity section
   const handleActivityToggle = () => {
@@ -49,6 +49,11 @@ const Sidebar = () => {
   // Toggle for assignments section
   const handleAssignmentToggle = () => {
     setAssignmentOpen(!assignmentOpen);
+  };
+
+  // Toggle for QnA section
+  const handleQnaToggle = () => {
+    setQnaOpen(!qnaOpen);
   };
 
   return (
@@ -122,7 +127,7 @@ const Sidebar = () => {
             >
               <MdFeedback className="mr-3" /> Complaints
             </Link>
-           
+
             <Link
               to="/user/list"
               className="flex items-center hover:bg-blue-500 hover:text-white p-2 rounded-lg transition-colors"
@@ -206,17 +211,64 @@ const Sidebar = () => {
               </div>
             )}
 
+            {/* QnA Section */}
+            <div>
+              <button
+                onClick={handleQnaToggle}
+                className="flex items-center justify-between hover:bg-blue-500 hover:text-white p-2 rounded-lg transition-colors"
+              >
+                <div className="flex items-center">
+                  <FaClipboardList className="mr-3" /> QnA
+                </div>
+                {qnaOpen ? (
+                  <MdArrowDropUp className="text-xl" />
+                ) : (
+                  <MdArrowDropDown className="text-xl" />
+                )}
+              </button>
+              {qnaOpen && (
+                <div className="flex flex-col space-y-2 pl-8 mt-2">
+                  <Link
+                    to="/create-qna"
+                    className="flex items-center hover:bg-blue-500 hover:text-white p-2 rounded-lg transition-colors"
+                  >
+                    <MdAddAlert className="mr-3" /> Create QnA
+                  </Link>
+
+                  <Link
+                    to="/list-qna"
+                    className="flex items-center hover:bg-blue-500 hover:text-white p-2 rounded-lg transition-colors"
+                  >
+                    <IoMdAlert className="mr-3" /> Display QnA
+                  </Link>
+                </div>
+              )}
+            </div>
+
             <Link
               to="/settings"
               className="flex items-center hover:bg-blue-500 hover:text-white p-2 rounded-lg transition-colors"
             >
-              <FaCog className="mr-3" /> Setting
+              <FaCog className="mr-3" /> Settings
+            </Link>
+
+            <Link
+              to="/notifications"
+              className="flex items-center hover:bg-blue-500 hover:text-white p-2 rounded-lg transition-colors"
+            >
+              <AiOutlineNotification className="mr-3" /> Notification
+            </Link>
+
+            <Link
+              to="/notice"
+              className="flex items-center hover:bg-blue-500 hover:text-white p-2 rounded-lg transition-colors"
+            >
+              <MdAnnouncement className="mr-3" /> Announcement
             </Link>
           </nav>
         </div>
       </div>
 
-      {/* Modal for Create User Page */}
       {isOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-80">
           <div className="p-4 rounded-lg max-w-lg w-full bg-white">
