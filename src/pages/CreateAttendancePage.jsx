@@ -114,10 +114,7 @@ const CreateAttendancePage = () => {
   };
 
   return (
-    <Box display="flex">
-      <Sidebar />
-      <Box flex="1" bg="gray.100">
-        <Topbar />
+    
         <Box
           maxW="500px"
           mx="auto"
@@ -286,8 +283,6 @@ const CreateAttendancePage = () => {
             </svg>
           </form>
         </Box>
-      </Box>
-    </Box>
   );
 };
 

@@ -56,9 +56,7 @@ const ListAssignmentsPage = () => {
 
   return (
     <Box display="flex">
-      <Sidebar />
       <Box flex="1" bg="gray.100">
-        <Topbar />
 
         
         <Text fontSize="2xl" mt="4" textAlign="center">

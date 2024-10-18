@@ -68,10 +68,7 @@ const CreateNoticePage = () => {
   };
 
   return (
-    <Box display="flex">
-      <Sidebar />
-      <Box flex="1" bg="gray.100">
-        <Topbar />
+  
         <Box
           maxW="500px"
           mx="auto"
@@ -128,8 +125,6 @@ const CreateNoticePage = () => {
             </Button>
           </form>
         </Box>
-      </Box>
-    </Box>
   );
 };
 

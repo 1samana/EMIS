@@ -212,10 +212,7 @@ const ListAllUser = () => {
 
   return (
     <>
-      <div className="flex">
-        <Sidebar />
-        <div className="flex-grow bg-gray-100 min-h-screen">
-          <Topbar />
+      
           <div className="px-6">
             <div className="container mx-auto mt-10">
               {error && <div className="text-red-500">{error}</div>}
@@ -311,8 +308,6 @@ const ListAllUser = () => {
               </table>
             </div>
           </div>
-        </div>
-      </div>
 
       {/* Modal for Update User Page */}
       {toggleUpdate && (

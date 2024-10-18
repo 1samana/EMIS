@@ -382,10 +382,6 @@ const DashboardPage = () => {
   }
 
   return (
-    <div className="flex">
-      <Sidebar />
-      <div className="flex-grow bg-gray-100 min-h-screen">
-        <Topbar />
         <div className="px-6 container mx-auto my-10">
           {/* <h2 className="text-xl font-semibold mb-6">Dashboard Overview</h2> */}
           <div className="grid grid-cols-3 gap-6 mb-6">
@@ -480,8 +476,6 @@ const DashboardPage = () => {
             </div>
           </div>
         </div>
-      </div>
-    </div>
   );
 };
 
