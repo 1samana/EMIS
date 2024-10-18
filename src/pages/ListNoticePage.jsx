@@ -183,45 +183,76 @@ const ListNoticePage = () => {
   <ModalOverlay />
   <ModalContent
     borderRadius="20px"
-    bg="purple.50"
+    bg="white"
     p="6"
     textAlign="center"
-    maxW="600px"  // Increase modal width to accommodate larger images
+    maxW="650px"  // Increase modal width slightly for better spacing
     mx="auto"
+    boxShadow="xl"  // Add a subtle shadow for depth
   >
-    <ModalHeader>
-      Notice Details
+    <ModalHeader position="relative">
       {/* Close button at the top-right corner */}
       <CloseButton
         position="absolute"
         right="8px"
         top="8px"
+        size="lg"
+        color="gray.500"
         onClick={onClose}
       />
     </ModalHeader>
     <ModalBody>
       {selectedNotice && (
         <>
-          <Image
-            src={`${BASE_URL}${selectedNotice.ImageFile}`}
-            alt="Notice Image"
-            maxW="100%"  // Ensures the image doesn't overflow the modal width
-            maxH="400px"  // Set a max height to prevent the image from being too tall
-            objectFit="contain"  // Adjusts image scaling to fit within its container
-            mx="auto"
-            mb="4"
-          />
-          <Text fontSize="lg" fontWeight="bold">
+          {/* Notice Title */}
+          <Text fontSize="3xl" fontWeight="bold" color="blue.600" mb="3">
             {selectedNotice.noticeName}
           </Text>
-          <Text>Semester: {selectedNotice.faculty_batch_Sem}</Text>
-          <Text>Posted By: {selectedNotice.userID || "N/A"}</Text>
-          <Text mt="4">{selectedNotice.description}</Text>
+
+          {/* Image with a subtle border and shadow */}
+          <Box
+            border="2px"
+            borderColor="gray.200"
+            p="1"
+            mb="5"
+            borderRadius="md"
+            boxShadow="lg"
+          >
+            <Image
+              src={`${BASE_URL}${selectedNotice.ImageFile}`}
+              alt="Notice Image"
+              maxW="100%"  // Ensures the image doesn't overflow the modal width
+              maxH="400px"  // Set a max height to prevent the image from being too tall
+              objectFit="contain"  // Adjusts image scaling to fit within its container
+              mx="auto"
+              borderRadius="md"  // Add rounded corners for a softer look
+            />
+          </Box>
+
+          {/* Additional Details */}
+          <Text fontSize="lg" fontWeight="semibold" mb="2">
+            Semester:{" "}
+            <Text as="span" fontWeight="normal">
+              {selectedNotice.faculty_batch_Sem}
+            </Text>
+          </Text>
+
+          <Text fontSize="lg" fontWeight="semibold" mb="2">
+            Posted By:{" "}
+            <Text as="span" fontWeight="normal">
+              {selectedNotice.userID || "N/A"}
+            </Text>
+          </Text>
+
+          <Text fontSize="md" mt="4" lineHeight="tall" color="gray.600">
+            {selectedNotice.description}
+          </Text>
         </>
       )}
     </ModalBody>
   </ModalContent>
 </Modal>
+
 
 
 
