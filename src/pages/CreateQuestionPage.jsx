@@ -9,8 +9,6 @@ import {
   useToast,
   Text,
 } from "@chakra-ui/react";
-import Sidebar from "../components/Sidebar"; 
-import Topbar from "../components/Topbar"; 
 
 const CreateQnAPage = () => {
   const [question, setQuestion] = useState("");
@@ -94,10 +92,7 @@ const CreateQnAPage = () => {
   };
 
   return (
-    <Box display="flex">
-      <Sidebar />
-      <Box flex="1" bg="gray.100">
-        <Topbar />
+    
         <Box
           maxW="500px"
           mx="auto"
@@ -133,8 +128,6 @@ const CreateQnAPage = () => {
             </Button>
           </form>
         </Box>
-      </Box>
-    </Box>
   );
 };
 

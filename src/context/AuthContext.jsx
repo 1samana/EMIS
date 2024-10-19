@@ -3,6 +3,7 @@ import { useToast, Box, Text, Button } from "@chakra-ui/react";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 import { useNavigate } from "react-router-dom";
+import DashboardPage from "../pages/DashboardPage";
 
 export const AuthContext = createContext();
 
@@ -21,8 +22,9 @@ export const AuthContextProvider = ({ children }) => {
       ? jwtDecode(localStorage.getItem("authToken"))
       : null
   );
+  const [userRole, setUserRole] = useState("");
 
-  // console.log(authToken);
+  // console.log(authToken.access);
 
   // function for handleLogin
   async function handleLogin(email, password) {
@@ -162,10 +164,10 @@ export const AuthContextProvider = ({ children }) => {
             errMsg = responseData[0].email[0]; // Extract the email error message if it exists
           }
         } else if (responseData?.msg) {
-          // If responseData has a `msg` field, use it
+          // If responseData has a msg field, use it
           errMsg = responseData.msg;
         } else if (responseData?.detail) {
-          // If responseData has a `detail` field, use it
+          // If responseData has a detail field, use it
           errMsg = responseData.detail;
         } else if (responseData?.email) {
           // If the response contains an email-specific error, use it
@@ -213,6 +215,7 @@ export const AuthContextProvider = ({ children }) => {
               colorScheme="red"
               onClick={() => {
                 localStorage.removeItem("authToken");
+                localStorage.removeItem("newToken");
                 setAuthToken(null);
                 setUserData(null);
                 navigate("/login");
@@ -251,7 +254,7 @@ export const AuthContextProvider = ({ children }) => {
         config
       );
       if (result && result.data) {
-        // console.log("Received token response:", result.data);
+        console.log("Received token response:", result.data);
         localStorage.setItem("newToken", JSON.stringify(result.data));
         setAuthToken({ ...authToken, access: result.data.access });
         // setUserData(jwtDecode(result.data.access));
@@ -277,6 +280,31 @@ export const AuthContextProvider = ({ children }) => {
     return () => clearInterval(interval);
   }, [authToken]);
 
+  //fucntion to check the user profile
+  async function checkUser() {
+    try {
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${authToken.access}`,
+        },
+      };
+      console.log(config);
+      const result = await axios.get("/proxy/user/profile/", config);
+      if (result && result.data) {
+        // console.log(result.data.role);
+        setUserRole(result.data.role);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  useEffect(() => {
+    checkUser();
+    return () => {};
+  }, []);
+
   //function to toggle Popup box
   const [isPopupOpen, setIsPopupOpen] = useState(false);
 
@@ -292,8 +320,11 @@ export const AuthContextProvider = ({ children }) => {
     updateToken,
     logoutUser,
     handleToggle,
+    checkUser,
     //variables here
+    authToken,
     userData,
+    userRole,
   };
 
   return (

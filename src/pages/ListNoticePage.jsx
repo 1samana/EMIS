@@ -110,9 +110,7 @@ const ListNoticePage = () => {
 
   return (
     <Box display="flex">
-      <Sidebar />
       <Box flex="1" bg="gray.100">
-        <Topbar />
         <Box
           maxW="800px"
           mx="auto"

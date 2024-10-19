@@ -168,16 +168,7 @@ const AllAttendancePage = () => {
   const month = date ? date.toLocaleString("default", { month: "long" }) : "";
 
   return (
-    <Box display="flex" height="100vh" backgroundColor="transparent">
-      <Sidebar />
-
-      <Box
-        flex="1"
-        display="flex"
-        flexDirection="column"
-        backgroundColor="transparent"
-      >
-        <Topbar />
+    
 
         <Box p="6" flex="1" overflowY="auto" backgroundColor="transparent">
           <Box
@@ -355,8 +346,6 @@ const AllAttendancePage = () => {
             </Tbody>
           </Table>
         </Box>
-      </Box>
-    </Box>
   );
 };
 

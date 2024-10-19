@@ -58,8 +58,8 @@ const Sidebar = () => {
 
   return (
     <>
-      <div className="bg-white-900 h-screen min-w-64 px-4 py-4 text-blue-700 sticky top-0 left-0 overflow-y-scroll">
-        <div className="flex flex-col mb-6 pb-4 border-b border-gray-300">
+      <div className="bg-white-900 h-screen min-w-64 px-4 py-4 text-blue-700 sticky top-0 left-0 overflow-y-scroll hide-scrollbar overflow-auto">
+      <div className="flex flex-col mb-6 pb-4 border-b border-gray-300">
           <Link to="/" className="flex items-center">
             <img
               src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSbjSnLNj15Y3XFO3rlotSj1BzNU-kqk7Ek_g&s"
@@ -260,10 +260,16 @@ const Sidebar = () => {
             </Link>
 
             <Link
-              to="/notice"
+              to="/create-complaint"
               className="flex items-center hover:bg-blue-500 hover:text-white p-2 rounded-lg transition-colors"
             >
-              <MdAnnouncement className="mr-3" /> Announcement
+              <MdAnnouncement className="mr-3" /> create Complaints
+            </Link>
+            <Link
+              to="/my-complaint"
+              className="flex items-center hover:bg-blue-500 hover:text-white p-2 rounded-lg transition-colors"
+            >
+              <MdAnnouncement className="mr-3" /> My Complaints
             </Link>
           </nav>
         </div>
