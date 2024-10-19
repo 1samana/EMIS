@@ -254,7 +254,7 @@ export const AuthContextProvider = ({ children }) => {
         config
       );
       if (result && result.data) {
-        // console.log("Received token response:", result.data);
+        console.log("Received token response:", result.data);
         localStorage.setItem("newToken", JSON.stringify(result.data));
         setAuthToken({ ...authToken, access: result.data.access });
         // setUserData(jwtDecode(result.data.access));

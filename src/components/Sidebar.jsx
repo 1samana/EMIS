@@ -260,10 +260,16 @@ const Sidebar = () => {
             </Link>
 
             <Link
-              to="/notice"
+              to="/create-complaint"
               className="flex items-center hover:bg-blue-500 hover:text-white p-2 rounded-lg transition-colors"
             >
-              <MdAnnouncement className="mr-3" /> Announcement
+              <MdAnnouncement className="mr-3" /> create Complaints
+            </Link>
+            <Link
+              to="/my-complaint"
+              className="flex items-center hover:bg-blue-500 hover:text-white p-2 rounded-lg transition-colors"
+            >
+              <MdAnnouncement className="mr-3" /> My Complaints
             </Link>
           </nav>
         </div>

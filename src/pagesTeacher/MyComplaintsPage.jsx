@@ -1,0 +1,201 @@
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+
+const MyComplaintsPage = () => {
+  const [complaints, setComplaints] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [page, setPage] = useState(1);
+  const [paginationInfo, setPaginationInfo] = useState({ next: null, previous: null });
+  const [editComplaintId, setEditComplaintId] = useState(null);
+  const [editFormData, setEditFormData] = useState({ title: '', description: '', suggestion: '' });
+
+  const fetchComplaints = async (page) => {
+    setLoading(true);
+    try {
+      const tokenString = localStorage.getItem('newToken');
+      const newToken = tokenString ? JSON.parse(tokenString) : null;
+
+      if (!newToken || !newToken.access) {
+        throw new Error('Authorization token is missing or invalid');
+      }
+
+      const config = {
+        headers: {
+          Authorization: `Bearer ${newToken.access}`,
+        },
+      };
+
+      const response = await axios.get(`/proxy/roles/complaints/mine/?page=${page}`, config);
+      console.log("API Response:", response.data);
+
+      if (Array.isArray(response.data)) {
+        setComplaints(response.data);
+        console.log("Complaints set:", response.data);
+      } else {
+        console.warn("No results found in response");
+        setComplaints([]);
+      }
+      setError(null);
+    } catch (error) {
+      console.error("Error fetching complaints:", error);
+      setError(error.message || 'Failed to fetch complaints');
+      setComplaints([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleEditChange = (e) => {
+    const { name, value } = e.target;
+    setEditFormData({ ...editFormData, [name]: value });
+  };
+
+  const startEditing = (complaint) => {
+    setEditComplaintId(complaint.complainID);
+    setEditFormData({
+      title: complaint.title,
+      description: complaint.description,
+      suggestion: complaint.suggestion,
+    });
+  };
+
+  const saveEdit = async () => {
+    try {
+      const tokenString = localStorage.getItem('newToken');
+      const newToken = tokenString ? JSON.parse(tokenString) : null;
+
+      const config = {
+        headers: {
+          Authorization: `Bearer ${newToken.access}`,
+        },
+      };
+
+      const response = await axios.put(`/proxy/roles/complaints/edit/${editComplaintId}/`, editFormData, config);
+      console.log("Edit Response:", response.data);
+      
+      // Update the complaints state with the edited complaint
+      setComplaints(prevComplaints => 
+        prevComplaints.map(complaint => 
+          complaint.complainID === editComplaintId ? { ...complaint, ...editFormData } : complaint
+        )
+      );
+      setEditComplaintId(null); // Reset the editing state
+    } catch (error) {
+      console.error("Error editing complaint:", error);
+      setError(error.message || 'Failed to edit complaint');
+    }
+  };
+
+  const deleteComplaint = async (complaintId) => {
+    try {
+      const tokenString = localStorage.getItem('newToken');
+      const newToken = tokenString ? JSON.parse(tokenString) : null;
+
+      const config = {
+        headers: {
+          Authorization: `Bearer ${newToken.access}`,
+        },
+      };
+
+      const response = await axios.delete(`/proxy/roles/complaints/delete/${complaintId}/`, config);
+      console.log("Delete Response:", response.data);
+
+      // Remove the deleted complaint from the state
+      setComplaints(prevComplaints => prevComplaints.filter(complaint => complaint.complainID !== complaintId));
+    } catch (error) {
+      console.error("Error deleting complaint:", error);
+      setError(error.message || 'Failed to delete complaint');
+    }
+  };
+
+  useEffect(() => {
+    fetchComplaints(page);
+  }, [page]);
+
+  useEffect(() => {
+    console.log("Current complaints:", complaints);
+  }, [complaints]);
+
+  return (
+    <div className="p-6">
+      <h2 className="text-xl font-bold mb-4">My Complaints</h2>
+      
+      {loading ? (
+        <p>Loading complaints...</p>
+      ) : error ? (
+        <p className="text-red-500">{error}</p>
+      ) : (
+        <div>
+          {complaints.length === 0 ? (
+            <p>No complaints found.</p>
+          ) : (
+            <table className="table-auto w-full border-collapse border">
+              <thead>
+                <tr className="border bg-gray-100">
+                  <th className="px-4 py-2">Complaint ID</th>
+                  <th className="px-4 py-2">Title</th>
+                  <th className="px-4 py-2">Description</th>
+                  <th className="px-4 py-2">Suggestion</th>
+                  <th className="px-4 py-2">Date</th>
+                  <th className="px-4 py-2">Status</th>
+                  <th className="px-4 py-2">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {complaints.map((complaint) => (
+                  <tr key={complaint.complainID} className="border">
+                    <td className="px-4 py-2">{complaint.complainID}</td>
+                    <td className="px-4 py-2">{editComplaintId === complaint.complainID ? 
+                      <input name="title" value={editFormData.title} onChange={handleEditChange} className="border" /> :
+                      complaint.title}
+                    </td>
+                    <td className="px-4 py-2">{editComplaintId === complaint.complainID ? 
+                      <input name="description" value={editFormData.description} onChange={handleEditChange} className="border" /> :
+                      complaint.description}
+                    </td>
+                    <td className="px-4 py-2">{editComplaintId === complaint.complainID ? 
+                      <input name="suggestion" value={editFormData.suggestion} onChange={handleEditChange} className="border" /> :
+                      complaint.suggestion}
+                    </td>
+                    <td className="px-4 py-2">{new Date(complaint.date).toLocaleDateString()}</td>
+                    <td className="px-4 py-2">{complaint.solved ? 'Yes' : 'No'}</td>
+                    <td className="px-4 py-2">
+                      {editComplaintId === complaint.complainID ? (
+                        <button onClick={saveEdit} className="bg-green-500 text-white px-2 py-1 rounded">Save</button>
+                      ) : (
+                        <button onClick={() => startEditing(complaint)} className="bg-yellow-500 text-white px-2 py-1 rounded">Edit</button>
+                      )}
+                      <button onClick={() => deleteComplaint(complaint.complainID)} className="bg-red-500 text-white px-2 py-1 rounded ml-2">Delete</button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+
+          {/* Pagination Controls */}
+          <div className="mt-4 flex justify-between">
+            <button
+              disabled={!paginationInfo.previous}
+              onClick={() => setPage(page - 1)}
+              className="bg-blue-500 text-white px-4 py-2 rounded disabled:opacity-50"
+            >
+              Previous
+            </button>
+
+            <button
+              disabled={!paginationInfo.next}
+              onClick={() => setPage(page + 1)}
+              className="bg-blue-500 text-white px-4 py-2 rounded disabled:opacity-50"
+            >
+              Next
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default MyComplaintsPage;
