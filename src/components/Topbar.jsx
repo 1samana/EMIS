@@ -37,14 +37,7 @@ const Topbar = () => {
           {menuOpen && (
             <div className="absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-md border border-gray-200">
               <ul className="py-1">
-              <li>
-  <a
-    href="/edit-profile"
-    className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
-  >
-    Edit Profile
-  </a>
-</li>
+              
 <li>
   <a
     href="/view-profile"

@@ -1,6 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useToast, Box, Button, Input, FormLabel } from '@chakra-ui/react';
+import {
+  useToast,
+  Box,
+  Button,
+  Input,
+  FormLabel,
+  Heading,
+  Avatar,
+  VStack,
+  HStack,
+  Divider,
+  FormControl,
+  Flex,
+  Spinner,
+} from '@chakra-ui/react';
+import { ArrowBackIcon } from '@chakra-ui/icons';
+import { useNavigate } from 'react-router-dom';
 
 const EditProfile = () => {
   const [userData, setUserData] = useState({
@@ -12,12 +28,13 @@ const EditProfile = () => {
     DOB: '',
     Photo: null,
   });
-  
-  const [loading, setLoading] = useState(false);
+
+  const [loading, setLoading] = useState(true);
+  const [photoPreview, setPhotoPreview] = useState(null);
   const toast = useToast();
+  const navigate = useNavigate();
 
   useEffect(() => {
-    // Fetch user data when the component mounts
     const fetchUserProfile = async () => {
       const token = JSON.parse(localStorage.getItem('newToken'));
       if (token && token.access) {
@@ -27,7 +44,21 @@ const EditProfile = () => {
               Authorization: `Bearer ${token.access}`,
             },
           });
-          setUserData(response.data); // Assuming response.data contains user info
+
+          const profileData = response.data.profile;
+
+          setUserData({
+            address: profileData.address || '',
+            phone_no: profileData.phone_no || '',
+            Father_name: profileData.Father_name || '',
+            Mother_name: profileData.Mother_name || '',
+            Parents_phone_no: profileData.Parents_phone_no || '',
+            DOB: profileData.DOB || '',
+            Photo: profileData.Photo || null,
+          });
+
+          const photoURL = `http://10.5.15.11:8000${profileData.Photo}`; // Adjust base URL as needed
+          setPhotoPreview(photoURL);
         } catch (error) {
           toast({
             title: 'Error loading profile',
@@ -36,6 +67,8 @@ const EditProfile = () => {
             duration: 3000,
             isClosable: true,
           });
+        } finally {
+          setLoading(false);
         }
       }
     };
@@ -49,7 +82,14 @@ const EditProfile = () => {
   };
 
   const handleFileChange = (e) => {
-    setUserData({ ...userData, Photo: e.target.files[0] });
+    const file = e.target.files[0];
+    setUserData({ ...userData, Photo: file });
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setPhotoPreview(reader.result);
+    };
+    reader.readAsDataURL(file);
   };
 
   const handleSubmit = async (e) => {
@@ -57,7 +97,7 @@ const EditProfile = () => {
     setLoading(true);
 
     const token = JSON.parse(localStorage.getItem('newToken'));
-    
+
     const formData = new FormData();
     formData.append('address', userData.address);
     formData.append('phone_no', userData.phone_no);
@@ -66,7 +106,7 @@ const EditProfile = () => {
     formData.append('Parents_phone_no', userData.Parents_phone_no);
     formData.append('DOB', userData.DOB);
     if (userData.Photo) {
-      formData.append('Photo', userData.Photo); // Append file only if there’s a new one
+      formData.append('Photo', userData.Photo);
     }
 
     try {
@@ -84,10 +124,11 @@ const EditProfile = () => {
         duration: 3000,
         isClosable: true,
       });
+      navigate('/view-profile');
     } catch (error) {
       toast({
         title: 'Error updating profile',
-        description: error.response ? error.response.data.message : 'An error occurred while updating the profile.',
+        description: error.response?.data?.message || 'An error occurred while updating the profile.',
         status: 'error',
         duration: 3000,
         isClosable: true,
@@ -97,80 +138,130 @@ const EditProfile = () => {
     }
   };
 
+  const handleBackClick = () => {
+    navigate('/view-profile');
+  };
+
   return (
-    <Box maxW="500px" mx="auto" mt="10">
-      <form onSubmit={handleSubmit}>
-        <FormLabel>Address</FormLabel>
-        <Input
-          name="address"
-          value={userData.address}
-          onChange={handleInputChange}
-          mb={4}
-          placeholder="Enter your address"
+    <Box
+      maxW="600px"
+      mx="auto"
+      mt="10"
+      p={6}
+      bg="white"
+      borderRadius="md"
+      boxShadow="lg"
+    >
+      <Flex justify="space-between" align="center" mb={6}>
+        <ArrowBackIcon
+          boxSize={6}
+          cursor="pointer"
+          onClick={handleBackClick}
         />
+        <Heading as="h2" size="lg" textAlign="center" color="blue.600">
+          Edit Profile
+        </Heading>
+        <Box />
+      </Flex>
 
-        <FormLabel>Phone Number</FormLabel>
-        <Input
-          name="phone_no"
-          value={userData.phone_no}
-          onChange={handleInputChange}
-          mb={4}
-          placeholder="Enter your phone number"
-        />
+      {loading ? (
+        <Flex justify="center" align="center">
+          <Spinner size="lg" />
+        </Flex>
+      ) : (
+        <form onSubmit={handleSubmit}>
+          <VStack spacing={6} align="start">
+            <HStack spacing={4}>
+              <Avatar size="xl" src={photoPreview} />
+              <FormControl>
+                <FormLabel>Profile Photo</FormLabel>
+                <Input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileChange}
+                />
+              </FormControl>
+            </HStack>
 
-        <FormLabel>Father's Name</FormLabel>
-        <Input
-          name="Father_name"
-          value={userData.Father_name}
-          onChange={handleInputChange}
-          mb={4}
-          placeholder="Enter father's name"
-        />
+            <FormControl>
+              <FormLabel>Address</FormLabel>
+              <Input
+                name="address"
+                value={userData.address}
+                onChange={handleInputChange}
+                placeholder="Enter your address"
+                bg="gray.50"
+              />
+            </FormControl>
 
-        <FormLabel>Mother's Name</FormLabel>
-        <Input
-          name="Mother_name"
-          value={userData.Mother_name}
-          onChange={handleInputChange}
-          mb={4}
-          placeholder="Enter mother's name"
-        />
+            <FormControl>
+              <FormLabel>Phone Number</FormLabel>
+              <Input
+                name="phone_no"
+                value={userData.phone_no}
+                onChange={handleInputChange}
+                placeholder="Enter your phone number"
+                bg="gray.50"
+              />
+            </FormControl>
 
-        <FormLabel>Parents' Phone Number</FormLabel>
-        <Input
-          name="Parents_phone_no"
-          value={userData.Parents_phone_no}
-          onChange={handleInputChange}
-          mb={4}
-          placeholder="Enter parents' phone number"
-        />
+            <FormControl>
+              <FormLabel>Father's Name</FormLabel>
+              <Input
+                name="Father_name"
+                value={userData.Father_name}
+                onChange={handleInputChange}
+                placeholder="Enter father's name"
+                bg="gray.50"
+              />
+            </FormControl>
 
-        <FormLabel>Date of Birth</FormLabel>
-        <Input
-          name="DOB"
-          type="date"
-          value={userData.DOB}
-          onChange={handleInputChange}
-          mb={4}
-        />
+            <FormControl>
+              <FormLabel>Mother's Name</FormLabel>
+              <Input
+                name="Mother_name"
+                value={userData.Mother_name}
+                onChange={handleInputChange}
+                placeholder="Enter mother's name"
+                bg="gray.50"
+              />
+            </FormControl>
 
-        <FormLabel>Profile Photo</FormLabel>
-        <Input
-          type="file"
-          accept="image/*"
-          onChange={handleFileChange}
-          mb={4}
-        />
+            <FormControl>
+              <FormLabel>Parents' Phone Number</FormLabel>
+              <Input
+                name="Parents_phone_no"
+                value={userData.Parents_phone_no}
+                onChange={handleInputChange}
+                placeholder="Enter parents' phone number"
+                bg="gray.50"
+              />
+            </FormControl>
 
-        <Button
-          colorScheme="blue"
-          type="submit"
-          isLoading={loading}
-          isDisabled={loading}
-        >
-          Update Profile
-        </Button>
-      </form>
+            <FormControl>
+              <FormLabel>Date of Birth</FormLabel>
+              <Input
+                name="DOB"
+                type="date"
+                value={userData.DOB}
+                onChange={handleInputChange}
+                bg="gray.50"
+              />
+            </FormControl>
+
+            <Divider />
+
+            <Button
+              colorScheme="blue"
+              type="submit"
+              isLoading={loading}
+              width="full"
+            >
+              Save Changes
+            </Button>
+          </VStack>
+        </form>
+      )}
     </Box>
   );
 };

@@ -30,8 +30,10 @@ const MyComplaintsPage = () => {
       console.log("API Response:", response.data);
 
       if (Array.isArray(response.data)) {
-        setComplaints(response.data);
-        console.log("Complaints set:", response.data);
+        // Sort complaints from newest to oldest
+        const sortedComplaints = response.data.sort((a, b) => new Date(b.date) - new Date(a.date));
+        setComplaints(sortedComplaints);
+        console.log("Complaints set:", sortedComplaints);
       } else {
         console.warn("No results found in response");
         setComplaints([]);
@@ -133,7 +135,6 @@ const MyComplaintsPage = () => {
             <table className="table-auto w-full border-collapse border">
               <thead>
                 <tr className="border bg-gray-100">
-                  <th className="px-4 py-2">Complaint ID</th>
                   <th className="px-4 py-2">Title</th>
                   <th className="px-4 py-2">Description</th>
                   <th className="px-4 py-2">Suggestion</th>
@@ -143,55 +144,53 @@ const MyComplaintsPage = () => {
                 </tr>
               </thead>
               <tbody>
-                {complaints.map((complaint) => (
-                  <tr key={complaint.complainID} className="border">
-                    <td className="px-4 py-2">{complaint.complainID}</td>
-                    <td className="px-4 py-2">{editComplaintId === complaint.complainID ? 
-                      <input name="title" value={editFormData.title} onChange={handleEditChange} className="border" /> :
-                      complaint.title}
-                    </td>
-                    <td className="px-4 py-2">{editComplaintId === complaint.complainID ? 
-                      <input name="description" value={editFormData.description} onChange={handleEditChange} className="border" /> :
-                      complaint.description}
-                    </td>
-                    <td className="px-4 py-2">{editComplaintId === complaint.complainID ? 
-                      <input name="suggestion" value={editFormData.suggestion} onChange={handleEditChange} className="border" /> :
-                      complaint.suggestion}
-                    </td>
-                    <td className="px-4 py-2">{new Date(complaint.date).toLocaleDateString()}</td>
-                    <td className="px-4 py-2">{complaint.solved ? 'Yes' : 'No'}</td>
-                    <td className="px-4 py-2">
-                      {editComplaintId === complaint.complainID ? (
-                        <button onClick={saveEdit} className="bg-green-500 text-white px-2 py-1 rounded">Save</button>
-                      ) : (
-                        <button onClick={() => startEditing(complaint)} className="bg-yellow-500 text-white px-2 py-1 rounded">Edit</button>
-                      )}
-                      <button onClick={() => deleteComplaint(complaint.complainID)} className="bg-red-500 text-white px-2 py-1 rounded ml-2">Delete</button>
-                    </td>
-                  </tr>
-                ))}
+                {complaints.map((complaint) => {
+                  const isSolved = complaint.solved; // Check if the complaint is solved
+
+                  return (
+                    <tr key={complaint.complainID} className="border">
+                      <td className="px-4 py-2">{editComplaintId === complaint.complainID ? 
+                        <input name="title" value={editFormData.title} onChange={handleEditChange} className="border" /> :
+                        complaint.title}
+                      </td>
+                      <td className="px-4 py-2">{editComplaintId === complaint.complainID ? 
+                        <input name="description" value={editFormData.description} onChange={handleEditChange} className="border" /> :
+                        complaint.description}
+                      </td>
+                      <td className="px-4 py-2">{editComplaintId === complaint.complainID ? 
+                        <input name="suggestion" value={editFormData.suggestion} onChange={handleEditChange} className="border" /> :
+                        complaint.suggestion}
+                      </td>
+                      <td className="px-4 py-2">{new Date(complaint.date).toLocaleDateString()}</td>
+                      <td className="px-4 py-2">{isSolved ? 'Solved' : 'Pending'}</td>
+                      <td className="px-4 py-2">
+                        {editComplaintId === complaint.complainID ? (
+                          <button onClick={saveEdit} className="bg-green-500 text-white px-2 py-1 rounded">Save</button>
+                        ) : (
+                          <button 
+                            onClick={() => startEditing(complaint)} 
+                            className={`bg-yellow-500 text-white px-2 py-1 rounded ${isSolved ? 'opacity-50 cursor-not-allowed' : ''}`}
+                            disabled={isSolved} // Disable edit button if solved
+                          >
+                            Edit
+                          </button>
+                        )}
+                        <button
+                          onClick={() => deleteComplaint(complaint.complainID)}
+                          className={`bg-red-500 text-white px-2 py-1 rounded ml-2 ${isSolved ? 'opacity-50 cursor-not-allowed' : ''}`}
+                          disabled={isSolved} // Disable delete button if solved
+                        >
+                          Delete
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           )}
 
-          {/* Pagination Controls */}
-          <div className="mt-4 flex justify-between">
-            <button
-              disabled={!paginationInfo.previous}
-              onClick={() => setPage(page - 1)}
-              className="bg-blue-500 text-white px-4 py-2 rounded disabled:opacity-50"
-            >
-              Previous
-            </button>
-
-            <button
-              disabled={!paginationInfo.next}
-              onClick={() => setPage(page + 1)}
-              className="bg-blue-500 text-white px-4 py-2 rounded disabled:opacity-50"
-            >
-              Next
-            </button>
-          </div>
+          
         </div>
       )}
     </div>
