@@ -309,7 +309,6 @@ const ListAllUser = () => {
             </div>
           </div>
 
-      {/* Modal for Update User Page */}
       {toggleUpdate && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-80">
           <div className=" p-4 rounded-lg max-w-lg w-full">

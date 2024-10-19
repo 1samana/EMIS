@@ -1,11 +1,13 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { FaSearch } from "react-icons/fa";
 import { AuthContext } from "../context/AuthContext";
 import ProfilePage from "../pagesTeacher/ProfilePage";
+import axios from "axios";
 
 const Topbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const [profilePhoto, setProfilePhoto] = useState(null); // State to hold profile photo
 
   const { logoutUser } = useContext(AuthContext);
 
@@ -17,9 +19,34 @@ const Topbar = () => {
     setIsOpen(!isOpen);
   };
 
+  // Fetch user profile photo on component mount
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      const token = JSON.parse(localStorage.getItem("newToken"));
+      if (token && token.access) {
+        try {
+          const response = await axios.get("/proxy/user/profile/", {
+            headers: {
+              Authorization: `Bearer ${token.access}`,
+            },
+          });
+
+          const profileData = response.data.profile;
+          const photoURL = `http://10.5.15.11:8000${profileData.Photo}`; // Adjust URL according to your backend
+
+          setProfilePhoto(photoURL); // Set the profile photo in state
+        } catch (error) {
+          console.error("Error fetching profile data:", error);
+        }
+      }
+    };
+
+    fetchUserProfile();
+  }, []);
+
   return (
     <>
-      <div className="flex justify-between items-center bg-white shadow px-6 py-4 ">
+      <div className="flex justify-between items-center bg-white shadow px-6 py-4">
         <div className="relative flex items-center">
           <FaSearch className="absolute left-3 text-gray-400" />
           <input
@@ -35,8 +62,9 @@ const Topbar = () => {
               className="w-10 h-10 rounded-full focus:outline-none"
               onClick={handleMenuToggle}
             >
+              {/* Dynamically display user profile photo */}
               <img
-                src="https://randomuser.me/api/portraits/men/32.jpg"
+                src={profilePhoto || "https://via.placeholder.com/150"} // Fallback image if no photo is available
                 alt="User Avatar"
                 className="w-full h-full rounded-full"
               />

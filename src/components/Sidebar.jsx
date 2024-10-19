@@ -67,7 +67,7 @@ const Sidebar = () => {
               className="w-12 h-12 mr-3"
             />
             <div className="leading-none">
-              <span className="text-2xl font-bold">ADMIN</span>
+              <span className="text-2xl font-bold">EMIS</span>
               <br />
               <span className="text-sm">DASHBOARD</span>
             </div>
