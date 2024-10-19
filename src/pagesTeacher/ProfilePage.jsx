@@ -1,11 +1,10 @@
-// ProfilePage.jsx
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom"; // Import useNavigate
 
 const BASE_URL = "http://10.5.15.11:8000";
 
-const ProfilePage = () => {
+const ProfilePage = ({ closeModal }) => { // Accept closeModal as a prop
   const navigate = useNavigate(); // Initialize the useNavigate hook
   const [profileData, setProfileData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -51,10 +50,13 @@ const ProfilePage = () => {
   }, []);
 
   const handleEditClick = () => {
+    closeModal(); // Close the modal before navigation
     navigate("/edit-profile"); // Redirect to the /edit-profile route
   };
-  const handleEditClickk = () => {
-    navigate("/create-complaint"); // Redirect to the /edit-profile route
+
+  const handleCreateComplaintClick = () => {
+    closeModal(); // Close the modal before navigation
+    navigate("/create-complaint"); // Redirect to the /create-complaint route
   };
 
   if (loading) {
@@ -72,10 +74,10 @@ const ProfilePage = () => {
   const { profile, role } = profileData;
 
   return (
-    <div className="flex items-center justify-center mt-24 bg-gray-100">
+    <div className="flex items-center justify-center mt-6 bg-gray-100">
       <div className="bg-white shadow-lg rounded-lg w-full max-w-3xl p-6 flex">
         {/* Left Side */}
-        <div className="w-1/2 p-6">
+        <div className="w-1/2 px-6 pt-0 pb-6">
           <h1 className="text-4xl font-bold text-blue-600">{profile.Father_name}</h1>
           <span className="text-black">
             <p className="text-lg text-black">{role}</p>
@@ -107,7 +109,10 @@ const ProfilePage = () => {
             >
               Edit Profile
             </button>
-            <button  onClick={handleEditClickk} className="bg-blue-600 text-white py-2 px-4 rounded-lg shadow-md">
+            <button
+              onClick={handleCreateComplaintClick} // Call the function to navigate
+              className="bg-blue-600 text-white py-2 px-4 rounded-lg shadow-md"
+            >
               Create Complaint
             </button>
           </div>

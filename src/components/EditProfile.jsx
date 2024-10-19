@@ -138,9 +138,7 @@ const EditProfile = () => {
     }
   };
 
-  const handleBackClick = () => {
-    navigate('/view-profile');
-  };
+ 
 
   return (
     <Box
@@ -152,17 +150,11 @@ const EditProfile = () => {
       borderRadius="md"
       boxShadow="lg"
     >
-      <Flex justify="space-between" align="center" mb={6}>
-        <ArrowBackIcon
-          boxSize={6}
-          cursor="pointer"
-          onClick={handleBackClick}
-        />
+      
         <Heading as="h2" size="lg" textAlign="center" color="blue.600">
           Edit Profile
         </Heading>
         <Box />
-      </Flex>
 
       {loading ? (
         <Flex justify="center" align="center">

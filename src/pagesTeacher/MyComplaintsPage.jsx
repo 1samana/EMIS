@@ -120,8 +120,8 @@ const MyComplaintsPage = () => {
   }, [complaints]);
 
   return (
-    <div className="p-6">
-      <h2 className="text-xl font-bold mb-4">My Complaints</h2>
+    <div className="flex flex-col items-center justify-center p-6 ">
+      <h2 className="text-xl font-bold mb-4 ">My Complaints</h2>
       
       {loading ? (
         <p>Loading complaints...</p>
@@ -132,15 +132,15 @@ const MyComplaintsPage = () => {
           {complaints.length === 0 ? (
             <p>No complaints found.</p>
           ) : (
-            <table className="table-auto w-full border-collapse border">
+            <table className="min-w-full table-auto border-collapse border border-gray-200">
               <thead>
-                <tr className="border bg-gray-100">
-                  <th className="px-4 py-2">Title</th>
-                  <th className="px-4 py-2">Description</th>
-                  <th className="px-4 py-2">Suggestion</th>
-                  <th className="px-4 py-2">Date</th>
-                  <th className="px-4 py-2">Status</th>
-                  <th className="px-4 py-2">Actions</th>
+                <tr className="bg-blue-500 text-white text-nowrap ">
+                  <th className="px-4 py-2 border border-gray-300">Title</th>
+                  <th className="px-4 py-2 border border-gray-300">Description</th>
+                  <th className="px-4 py-2 border border-gray-300">Suggestion</th>
+                  <th className="px-4 py-2 border border-gray-300">Date</th>
+                  <th className="px-4 py-2 border border-gray-300">Status</th>
+                  <th className="px-4 py-2 border border-gray-300">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -148,28 +148,28 @@ const MyComplaintsPage = () => {
                   const isSolved = complaint.solved; // Check if the complaint is solved
 
                   return (
-                    <tr key={complaint.complainID} className="border">
-                      <td className="px-4 py-2">{editComplaintId === complaint.complainID ? 
+                    <tr key={complaint.complainID} className="bg-white even:bg-gray-100">
+                      <td className="px-4 py-2 border border-gray-300">{editComplaintId === complaint.complainID ? 
                         <input name="title" value={editFormData.title} onChange={handleEditChange} className="border" /> :
                         complaint.title}
                       </td>
-                      <td className="px-4 py-2">{editComplaintId === complaint.complainID ? 
+                      <td className="px-4 py-2 border border-gray-300">{editComplaintId === complaint.complainID ? 
                         <input name="description" value={editFormData.description} onChange={handleEditChange} className="border" /> :
                         complaint.description}
                       </td>
-                      <td className="px-4 py-2">{editComplaintId === complaint.complainID ? 
+                      <td className="px-4 py-2 border border-gray-300">{editComplaintId === complaint.complainID ? 
                         <input name="suggestion" value={editFormData.suggestion} onChange={handleEditChange} className="border" /> :
                         complaint.suggestion}
                       </td>
-                      <td className="px-4 py-2">{new Date(complaint.date).toLocaleDateString()}</td>
-                      <td className="px-4 py-2">{isSolved ? 'Solved' : 'Pending'}</td>
-                      <td className="px-4 py-2">
+                      <td className="px-4 py-2 border border-gray-300">{new Date(complaint.date).toLocaleDateString()}</td>
+                      <td className="px-4 py-2 border border-gray-300">{isSolved ? 'Solved' : 'Pending'}</td>
+                      <td className="px-4 py-2 border border-gray-300">
                         {editComplaintId === complaint.complainID ? (
                           <button onClick={saveEdit} className="bg-green-500 text-white px-2 py-1 rounded">Save</button>
                         ) : (
                           <button 
                             onClick={() => startEditing(complaint)} 
-                            className={`bg-yellow-500 text-white px-2 py-1 rounded ${isSolved ? 'opacity-50 cursor-not-allowed' : ''}`}
+                            className={`bg-blue-600 text-white px-2 py-1 rounded ${isSolved ? 'opacity-50 cursor-not-allowed' : ''}`}
                             disabled={isSolved} // Disable edit button if solved
                           >
                             Edit
