@@ -124,7 +124,7 @@ const EditProfile = () => {
         duration: 3000,
         isClosable: true,
       });
-      navigate('/view-profile');
+      navigate('/edit-profile');
     } catch (error) {
       toast({
         title: 'Error updating profile',
