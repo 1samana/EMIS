@@ -25,7 +25,7 @@ import {
 import Sidebar from "../components/Sidebar";
 import Topbar from "../components/Topbar";
 
-const BASE_URL = "http://10.5.15.11:8000"; 
+const BASE_URL = "http://10.5.15.11:8000";
 
 const ListNoticePage = () => {
   const [notices, setNotices] = useState([]);
@@ -33,7 +33,7 @@ const ListNoticePage = () => {
   const [error, setError] = useState("");
   const [facultyBatchSemId, setFacultyBatchSemId] = useState("");
   const [selectedNotice, setSelectedNotice] = useState(null);
-  const { isOpen, onOpen, onClose } = useDisclosure(); 
+  const { isOpen, onOpen, onClose } = useDisclosure();
   const toast = useToast();
 
   const fetchNotices = async (semesterId) => {
@@ -52,10 +52,11 @@ const ListNoticePage = () => {
           config
         );
 
-        console.log("API Response:", response.data);
+        // Debugging - Log the API response for each semester
+        console.log(`API Response for Semester ${semesterId}:`, response.data);
 
         if (Array.isArray(response.data)) {
-          setNotices(response.data); 
+          setNotices(response.data);
         } else {
           console.error("Expected an array, but got:", response.data);
           setNotices([]);
@@ -90,8 +91,8 @@ const ListNoticePage = () => {
   };
 
   const handleViewNotice = (notice) => {
-    setSelectedNotice(notice); 
-    onOpen(); 
+    setSelectedNotice(notice);
+    onOpen();
   };
 
   useEffect(() => {
@@ -99,7 +100,12 @@ const ListNoticePage = () => {
   }, [facultyBatchSemId]);
 
   if (loading) {
-    return <div>Loading notices...</div>;
+    return (
+      <div className="text-3xl font-bold h-screen flex flex-col justify-center items-center ">
+        <img src={LoadingGif} alt="Loading..." className="w-52" />
+        <p className="text-xl font-semibold">Loading Notices...</p>
+      </div>
+    );
   }
 
   return (
@@ -183,79 +189,79 @@ const ListNoticePage = () => {
           </Table>
         </Box>
         <Modal isOpen={isOpen} onClose={onClose} isCentered>
-  <ModalOverlay />
-  <ModalContent
-    borderRadius="20px"
-    bg="white"
-    p="6"
-    textAlign="center"
-    maxW="650px"  
-    mx="auto"
-    boxShadow="xl"  
-  >
-    <ModalHeader position="relative">
-      <CloseButton
-        position="absolute"
-        right="8px"
-        top="8px"
-        size="lg"
-        color="gray.500"
-        onClick={onClose}
-      />
-    </ModalHeader>
-    <ModalBody>
-      {selectedNotice && (
-        <>
-          <Text fontSize="3xl" fontWeight="bold" color="blue.600" mb="3">
-            {selectedNotice.noticeName}
-          </Text>
-
-          <Box
-            border="2px"
-            borderColor="gray.200"
-            p="1"
-            mb="5"
-            borderRadius="md"
-            boxShadow="lg"
+          <ModalOverlay />
+          <ModalContent
+            borderRadius="20px"
+            bg="white"
+            p="6"
+            textAlign="center"
+            maxW="650px"
+            mx="auto"
+            boxShadow="xl"
           >
-            <Image
-              src={`${BASE_URL}${selectedNotice.ImageFile}`}
-              alt="Notice Image"
-              maxW="100%"  
-              maxH="400px"  
-              objectFit="contain"  
-              mx="auto"
-              borderRadius="md"  
-            />
-          </Box>
+            <ModalHeader position="relative">
+              <CloseButton
+                position="absolute"
+                right="8px"
+                top="8px"
+                size="lg"
+                color="gray.500"
+                onClick={onClose}
+              />
+            </ModalHeader>
+            <ModalBody>
+              {selectedNotice && (
+                <>
+                  <Text
+                    fontSize="3xl"
+                    fontWeight="bold"
+                    color="blue.600"
+                    mb="3"
+                  >
+                    {selectedNotice.noticeName}
+                  </Text>
 
-          <Text fontSize="lg" fontWeight="semibold" mb="2">
-            Semester:{" "}
-            <Text as="span" fontWeight="normal">
-              {selectedNotice.faculty_batch_Sem}
-            </Text>
-          </Text>
+                  <Box
+                    border="2px"
+                    borderColor="gray.200"
+                    p="1"
+                    mb="5"
+                    borderRadius="md"
+                    boxShadow="lg"
+                  >
+                    <Image
+                      src={`${BASE_URL}${selectedNotice.ImageFile}`}
+                      alt="Notice Image"
+                      maxW="100%"
+                      maxH="400px"
+                      objectFit="contain"
+                      mx="auto"
+                      borderRadius="md"
+                    />
+                  </Box>
 
-          <Text fontSize="lg" fontWeight="semibold" mb="2">
-            Posted By:{" "}
-            <Text as="span" fontWeight="normal">
-              {selectedNotice.userID || "N/A"}
-            </Text>
-          </Text>
+                  <Text fontSize="lg" fontWeight="semibold" mb="2">
+                    Semester:{" "}
+                    <Text as="span" fontWeight="normal">
+                      {selectedNotice.faculty_batch_Sem}
+                    </Text>
+                  </Text>
 
-          <Text fontSize="md" mt="4" lineHeight="tall" color="gray.600">
-            {selectedNotice.description}
-          </Text>
-        </>
-      )}
-    </ModalBody>
-  </ModalContent>
-</Modal>
+                  <Text fontSize="lg" fontWeight="semibold" mb="2">
+                    Posted By:{" "}
+                    <Text as="span" fontWeight="normal">
+                      {selectedNotice.userID || "N/A"}
+                    </Text>
+                  </Text>
 
-
-
-
-
+                  <Text fontSize="md" mt="4" lineHeight="tall" color="gray.600">
+                    {selectedNotice.description}
+                  </Text>
+                </>
+              )}
+            </ModalBody>
+          </ModalContent>
+        </Modal>
       </Box>
     </Box>
   );
