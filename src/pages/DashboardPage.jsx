@@ -102,7 +102,7 @@ const DashboardPage = () => {
     let totalNotices = [];
     let noticeBySemester = {};
 
-    for (let semesterId = 1; semesterId <= 5; semesterId++) {
+    for (let semesterId = 1; semesterId <= 8; semesterId++) {
       try {
         const config = {
           headers: {
