@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
+import { AuthContext } from '../context/AuthContext';
 import {
   useToast,
   Box,
@@ -33,15 +34,16 @@ const EditProfile = () => {
   const [photoPreview, setPhotoPreview] = useState(null);
   const toast = useToast();
   const navigate = useNavigate();
+  const { authToken } = useContext(AuthContext);
 
   useEffect(() => {
     const fetchUserProfile = async () => {
-      const token = JSON.parse(localStorage.getItem('newToken'));
-      if (token && token.access) {
+      
+      if (authToken && authToken.access) {
         try {
           const response = await axios.get('/proxy/user/profile/', {
             headers: {
-              Authorization: `Bearer ${token.access}`,
+              Authorization: `Bearer ${authToken.access}`,
             },
           });
 
@@ -92,11 +94,10 @@ const EditProfile = () => {
     reader.readAsDataURL(file);
   };
 
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-
-    const token = JSON.parse(localStorage.getItem('newToken'));
 
     const formData = new FormData();
     formData.append('address', userData.address);
@@ -112,7 +113,7 @@ const EditProfile = () => {
     try {
       await axios.put('/proxy/user/update/', formData, {
         headers: {
-          Authorization: `Bearer ${token.access}`,
+          Authorization: `Bearer ${authToken.access}`,
           'Content-Type': 'multipart/form-data',
         },
       });

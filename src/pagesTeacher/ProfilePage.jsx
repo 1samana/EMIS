@@ -11,7 +11,7 @@ const ProfilePage = ({ closeModal }) => { // Accept closeModal as a prop
   const [error, setError] = useState(null);
 
   const fetchProfile = async () => {
-    const storedToken = localStorage.getItem("newToken");
+    const storedToken = localStorage.getItem("authToken");
 
     if (!storedToken) {
       setError("No access token found. Please log in again.");
@@ -19,9 +19,9 @@ const ProfilePage = ({ closeModal }) => { // Accept closeModal as a prop
       return;
     }
 
-    const newToken = JSON.parse(storedToken);
+    const authToken = JSON.parse(storedToken);
 
-    if (!newToken?.access) {
+    if (!authToken?.access) {
       setError("Invalid token. Please log in again.");
       setLoading(false);
       return;
@@ -29,7 +29,7 @@ const ProfilePage = ({ closeModal }) => { // Accept closeModal as a prop
 
     const config = {
       headers: {
-        Authorization: `Bearer ${newToken.access}`,
+        Authorization: `Bearer ${authToken.access}`,
       },
     };
 

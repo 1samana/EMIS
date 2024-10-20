@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
-
+import { AuthContext } from '../context/AuthContext';
 const CreateComplaintsPage = () => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -8,6 +8,7 @@ const CreateComplaintsPage = () => {
   const [photo, setPhoto] = useState(null);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
+  const { authToken } = useContext(AuthContext);
 
   const handleFileChange = (e) => {
     setPhoto(e.target.files[0]);
@@ -23,10 +24,9 @@ const CreateComplaintsPage = () => {
     formData.append('photo', photo);
 
     try {
-      const newToken = JSON.parse(localStorage.getItem('newToken'));
       const config = {
         headers: {
-          Authorization: `Bearer ${newToken.access}`,
+          Authorization: `Bearer ${authToken.access}`,
           'Content-Type': 'multipart/form-data', // Since photo is uploaded
         },
       };

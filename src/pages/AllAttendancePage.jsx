@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
+import { AuthContext } from "../context/AuthContext";
 import {
   Box,
   Table,
@@ -30,11 +31,11 @@ const AllAttendancePage = () => {
 
   const toast = useToast();
 
-  const token = JSON.parse(localStorage.getItem("newToken"));
+  const { authToken } = useContext(AuthContext);
   const config = {
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${token.access}`,
+      Authorization: `Bearer ${authToken.access}`,
     },
   };
   

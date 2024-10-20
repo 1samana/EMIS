@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
+import { AuthContext } from "../context/AuthContext";
 
 const BASE_URL = "http://10.5.15.11:8000";
 
@@ -89,16 +90,16 @@ const MyComplaintsPage = () => {
   const fetchComplaints = async (page) => {
     setLoading(true);
     try {
-      const tokenString = localStorage.getItem("newToken");
-      const newToken = tokenString ? JSON.parse(tokenString) : null;
+      const tokenString = localStorage.getItem("authToken");
+      const authToken = tokenString ? JSON.parse(tokenString) : null;
 
-      if (!newToken || !newToken.access) {
+      if (!authToken || !authToken.access) {
         throw new Error("Authorization token is missing or invalid");
       }
 
       const config = {
         headers: {
-          Authorization: `Bearer ${newToken.access}`,
+          Authorization: `Bearer ${authToken.access}`,
         },
       };
 
@@ -150,12 +151,12 @@ const MyComplaintsPage = () => {
 
   const saveEdit = async () => {
     try {
-      const tokenString = localStorage.getItem("newToken");
-      const newToken = tokenString ? JSON.parse(tokenString) : null;
+      const tokenString = localStorage.getItem("authToken");
+      const authToken = tokenString ? JSON.parse(tokenString) : null;
   
       const config = {
         headers: {
-          Authorization: `Bearer ${newToken.access}`,
+          Authorization: `Bearer ${authToken.access}`,
           "Content-Type": "multipart/form-data", // Ensure the form data is correctly handled
         },
       };
@@ -201,12 +202,12 @@ const MyComplaintsPage = () => {
 
   const deleteComplaint = async (complaintId) => {
     try {
-      const tokenString = localStorage.getItem("newToken");
-      const newToken = tokenString ? JSON.parse(tokenString) : null;
+      const tokenString = localStorage.getItem("authToken");
+      const authToken = tokenString ? JSON.parse(tokenString) : null;
 
       const config = {
         headers: {
-          Authorization: `Bearer ${newToken.access}`,
+          Authorization: `Bearer ${authToken.access}`,
         },
       };
 

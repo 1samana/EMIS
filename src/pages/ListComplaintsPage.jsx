@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import Sidebar from "../components/Sidebar";
 import Topbar from "../components/Topbar";
 import { useToast } from "@chakra-ui/react";
 import LoadingGif from "../assets/news-loading.gif";
+import { AuthContext } from "../context/AuthContext";
 
 const BASE_URL = "http://10.5.15.11:8000";
 
@@ -14,9 +15,7 @@ const SimpleTable = () => {
   const [statusToggle, setStatusToggle] = useState(false);
 
   const toast = useToast();
-
-  // Retrieve the new token from localStorage and parse it to extract the access token
-  const newToken = JSON.parse(localStorage.getItem("newToken"));
+  const { authToken } = useContext(AuthContext);
 
   const changeFinalStatusColor = () => {};
 
@@ -24,7 +23,7 @@ const SimpleTable = () => {
     const config = {
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${newToken.access}`, // Using newToken.access in the Authorization header
+        Authorization: `Bearer ${authToken.access}`, 
       },
     };
 
@@ -58,7 +57,7 @@ const SimpleTable = () => {
       const config = {
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${newToken.access}`, // Using newToken.access in the Authorization header
+          Authorization: `Bearer ${authToken.access}`, // Using authToken.access in the Authorization header
         },
       };
       const response = await axios.patch(

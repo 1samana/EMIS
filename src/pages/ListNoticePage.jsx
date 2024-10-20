@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect,useContext } from "react";
 import axios from "axios";
 import { CloseButton } from "@chakra-ui/react";
 import LoadingGif from "../assets/news-loading.gif";
+import { AuthContext } from "../context/AuthContext";
 import {
   Box,
   Button,
@@ -36,14 +37,15 @@ const ListNoticePage = () => {
   const [selectedNotice, setSelectedNotice] = useState(null);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const toast = useToast();
+  const { authToken } = useContext(AuthContext);
+
 
   const fetchNotices = async (semesterId) => {
     setLoading(true);
-    try {
-      const newToken = JSON.parse(localStorage.getItem("newToken"));
+    try {;
       const config = {
         headers: {
-          Authorization: `Bearer ${newToken.access}`,
+          Authorization: `Bearer ${authToken.access}`,
         },
       };
 

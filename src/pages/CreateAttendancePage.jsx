@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import axios from "axios";
 import {
   Box,
@@ -11,6 +11,7 @@ import {
   Text,
   useToast,
 } from "@chakra-ui/react";
+import { AuthContext } from "../context/AuthContext";
 import { FaUser, FaCalendarAlt, FaBook, FaGraduationCap } from "react-icons/fa"; // Icons for input fields
 import Sidebar from "../components/Sidebar";
 import Topbar from "../components/Topbar";
@@ -22,6 +23,8 @@ const CreateAttendancePage = () => {
   const [date, setDate] = useState("");
   const [userId, setUserId] = useState("");
   const toast = useToast();
+  
+  const { authToken } = useContext(AuthContext);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -57,11 +60,11 @@ const CreateAttendancePage = () => {
     console.log("Creating attendance with payload:", payload);
 
     try {
-      const newToken = JSON.parse(localStorage.getItem("newToken"));
+      
       const config = {
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${newToken.access}`,
+          Authorization: `Bearer ${authToken.access}`,
         },
       };
 

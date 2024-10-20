@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import axios from "axios";
 import {
   Box,
@@ -9,6 +9,7 @@ import {
   useToast,
   Text,
 } from "@chakra-ui/react";
+import { AuthContext } from "../context/AuthContext";
 
 const CreateQnAPage = () => {
   const [question, setQuestion] = useState("");
@@ -23,13 +24,12 @@ const CreateQnAPage = () => {
 
     console.log("Sending question data:", questionData); 
 
-    try {
-      const newToken = JSON.parse(localStorage.getItem("newToken"));
-      console.log("Token:", newToken); 
+    try {const { authToken } = useContext(AuthContext);
+      console.log("Token:", authToken); 
 
       const config = {
         headers: {
-          Authorization: `Bearer ${newToken.access}`,
+          Authorization: `Bearer ${authToken.access}`,
           "Content-Type": "application/json", 
         },
       };

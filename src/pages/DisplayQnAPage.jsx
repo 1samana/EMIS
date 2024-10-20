@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import Sidebar from "../components/Sidebar";
 import Topbar from "../components/Topbar";
@@ -15,6 +15,7 @@ import {
   Button,
   Input,
 } from "@chakra-ui/react";
+import { AuthContext } from "../context/AuthContext";
 import LoadingGif from "../assets/news-loading.gif";
 
 const DisplayQnAPage = () => {
@@ -26,10 +27,11 @@ const DisplayQnAPage = () => {
 
   const fetchQnAs = async () => {
     setLoading(true);
-    const newToken = JSON.parse(localStorage.getItem("newToken"));
-    const config = {
+    
+const { authToken } = useContext(AuthContext); 
+const config = {
       headers: {
-        Authorization: `Bearer ${newToken.access}`,
+        Authorization: `Bearer ${authToken.access}`,
       },
     };
 
@@ -59,10 +61,10 @@ const DisplayQnAPage = () => {
   };
 
   const handleDeleteQnA = async (id) => {
-    const newToken = JSON.parse(localStorage.getItem("newToken"));
+    const { authToken } = useContext(AuthContext);
     const config = {
       headers: {
-        Authorization: `Bearer ${newToken.access}`,
+        Authorization: `Bearer ${authToken.access}`,
       },
     };
 

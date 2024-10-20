@@ -29,10 +29,53 @@ function App() {
 
   if (!authToken) {
     // Redirect to login if the user is not authenticated
-    return <Routes>
-      <Route path="/login" element={<LoginPage />} />
-      <Route path="*" element={<Navigate to="/login" />} />
-    </Routes>;
+    return (
+      <Routes>
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="*" element={<Navigate to="/login" />} />
+      </Routes>
+    );
+  }
+
+  // Admin components
+  function adminComponents() {
+    return (
+      <Routes>
+        <Route path="/" element={<PrivateRoute><DashboardPage /></PrivateRoute>} />
+        <Route path="/user/create" element={<PrivateRoute><CreateUserPage /></PrivateRoute>} />
+        <Route path="/list/complaints" element={<PrivateRoute><ListComplaintsPage /></PrivateRoute>} />
+        <Route path="/user/list" element={<PrivateRoute><ListAllUser /></PrivateRoute>} />
+        <Route path="/list-notice" element={<PrivateRoute><ListNoticePage /></PrivateRoute>} />
+        <Route path="/list-attendance" element={<PrivateRoute><AllAttendancePage /></PrivateRoute>} />
+        <Route path="/create/role" element={<PrivateRoute><CreatePermission /></PrivateRoute>} />
+        <Route path="/list-assignment" element={<PrivateRoute><ListAllAssignmentPage /></PrivateRoute>} />
+        <Route path="/create-assignment" element={<PrivateRoute><CreateAssignmentPage /></PrivateRoute>} />
+        <Route path="/create-attendance" element={<PrivateRoute><CreateAttendacePage /></PrivateRoute>} />
+        <Route path="/list-roles" element={<PrivateRoute><ListAllRolesPage /></PrivateRoute>} />
+        <Route path="/create-notice" element={<PrivateRoute><CreateNoticePage /></PrivateRoute>} />
+        <Route path="/create-qna" element={<PrivateRoute><CreateQuestionPage /></PrivateRoute>} />
+        <Route path="/list-qna" element={<PrivateRoute><DisplayQnAPage /></PrivateRoute>} />
+        <Route path="*" element={<Navigate to="/" />} />
+      </Routes>
+    );
+  }
+
+  // Teacher components
+  function teacherComponents() {
+    return (
+      <Routes>
+        <Route path="/list-notice" element={<PrivateRoute><ListNoticePage /></PrivateRoute>} />
+        <Route path="/create-complaint" element={<PrivateRoute><CreateComplaintsPage /></PrivateRoute>} />
+        <Route path="/my-complaint" element={<PrivateRoute><MyComplaintsPage /></PrivateRoute>} />
+        <Route path="/list-attendance" element={<PrivateRoute><AllAttendancePage /></PrivateRoute>} />
+        <Route path="/create-assignment" element={<PrivateRoute><CreateAssignmentPage /></PrivateRoute>} />
+        <Route path="/edit-profile" element={<PrivateRoute><EditProfile /></PrivateRoute>} />
+        <Route path="/view-profile" element={<PrivateRoute><ProfilePage /></PrivateRoute>} />
+        <Route path="/create-qna" element={<PrivateRoute><CreateQuestionPage /></PrivateRoute>} />
+        <Route path="/list-qna" element={<PrivateRoute><DisplayQnAPage /></PrivateRoute>} />
+        <Route path="*" element={<Navigate to="/" />} />
+      </Routes>
+    );
   }
 
   return (
@@ -44,42 +87,17 @@ function App() {
             <Topbar />
             <div className="px-6">
               <div className="container mx-auto my-8">
-                {/* display UI for Admin only */}
                 {userRole === "Admin" && (
-                  <Routes>
-                    <Route path="/" element={<PrivateRoute><DashboardPage /></PrivateRoute>} />
-                    <Route path="/user/create" element={<PrivateRoute><CreateUserPage /></PrivateRoute>} />
-                    <Route path="/list/complaints" element={<PrivateRoute><ListComplaintsPage /></PrivateRoute>} />
-                    <Route path="/user/list" element={<PrivateRoute><ListAllUser /></PrivateRoute>} />
-                    <Route path="/list-notice" element={<PrivateRoute><ListNoticePage /></PrivateRoute>} />
-                    <Route path="/list-attendance" element={<PrivateRoute><AllAttendancePage /></PrivateRoute>} />
-                    <Route path="/create/role" element={<PrivateRoute><CreatePermission /></PrivateRoute>} />
-                    <Route path="/list-assignment" element={<PrivateRoute><ListAllAssignmentPage /></PrivateRoute>} />
-                    <Route path="/create-assignment" element={<PrivateRoute><CreateAssignmentPage /></PrivateRoute>} />
-                    <Route path="/create-attendance" element={<PrivateRoute><CreateAttendacePage /></PrivateRoute>} />
-                    <Route path="/list-roles" element={<PrivateRoute><ListAllRolesPage /></PrivateRoute>} />
-                    <Route path="/create-notice" element={<PrivateRoute><CreateNoticePage /></PrivateRoute>} />
-                    <Route path="/create-qna" element={<PrivateRoute><CreateQuestionPage /></PrivateRoute>} />
-                    <Route path="/list-qna" element={<PrivateRoute><DisplayQnAPage /></PrivateRoute>} />
-                    <Route path="*" element={<Navigate to="/" />} />
-                  </Routes>
+                  <>
+                    {adminComponents()}
+                  </>
                 )}
                 {userRole === "Teacher" && (
-                  <Routes>
-                    <Route path="/list-notice" element={<PrivateRoute><ListNoticePage /></PrivateRoute>} />
-                    <Route path="/create-complaint" element={<PrivateRoute><CreateComplaintsPage /></PrivateRoute>} />
-                    <Route path="/my-complaint" element={<PrivateRoute><MyComplaintsPage /></PrivateRoute>} />
-                    <Route path="/list-attendance" element={<PrivateRoute><AllAttendancePage /></PrivateRoute>} />
-                    <Route path="/create-assignment" element={<PrivateRoute><CreateAssignmentPage /></PrivateRoute>} />
-                    <Route path="/edit-profile" element={<PrivateRoute><EditProfile /></PrivateRoute>} />
-                    <Route path="/view-profile" element={<PrivateRoute><ProfilePage /></PrivateRoute>} />
-                    <Route path="/create-qna" element={<PrivateRoute><CreateQuestionPage /></PrivateRoute>} />
-                    <Route path="/list-qna" element={<PrivateRoute><DisplayQnAPage /></PrivateRoute>} />
-                    <Route path="*" element={<Navigate to="/" />} />
-                  </Routes>
+                  <>
+                    {teacherComponents()}
+                  </>
                 )}
                 {userRole === "Student" && (
-                  // Student Dashboard or another student-specific component
                   <h1>This is the student dashboard</h1>
                 )}
                 {!userRole && <h1>Invalid role</h1>}

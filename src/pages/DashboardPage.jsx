@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { Line, Doughnut, Pie, Bar } from "react-chartjs-2";
 import { Link } from "react-router-dom";
 import {
@@ -16,10 +16,8 @@ import {
 } from "chart.js";
 import axios from "axios";
 import { useToast } from "@chakra-ui/react";
-import Sidebar from "../components/Sidebar";
-import Topbar from "../components/Topbar";
-import { s } from "framer-motion/client";
 import LoadingGif from "../assets/news-loading.gif";
+import { AuthContext } from "../context/AuthContext"; // Ensure this path is correct
 
 ChartJS.register(
   ArcElement,
@@ -35,23 +33,21 @@ ChartJS.register(
 );
 
 const DashboardPage = () => {
+  const { authToken } = useContext(AuthContext); // Access authToken from context
   const [complaintData, setComplaintData] = useState([]);
   const [userData, setUserData] = useState([]);
   const [notices, setNotices] = useState([]);
   const [noticesBySemester, setNoticesBySemester] = useState({});
   const [attendanceData, setAttendanceData] = useState([]);
-  const [attendanceChartData, setAttendanceChartData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const toast = useToast();
-
-  const newToken = JSON.parse(localStorage.getItem("newToken"));
 
   const fetchComplaints = async () => {
     const config = {
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${newToken.access}`,
+        Authorization: `Bearer ${authToken.access}`,
       },
     };
 
@@ -73,7 +69,7 @@ const DashboardPage = () => {
     const config = {
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${newToken.access}`,
+        Authorization: `Bearer ${authToken.access}`,
       },
     };
 
@@ -101,41 +97,31 @@ const DashboardPage = () => {
     }
   };
 
-  //fetch notices
   const fetchNotices = async () => {
     setLoading(true);
-
     let totalNotices = [];
     let noticeBySemester = {};
 
     for (let semesterId = 1; semesterId <= 5; semesterId++) {
       try {
-        const newToken = JSON.parse(localStorage.getItem("newToken"));
         const config = {
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${newToken.access}`,
+            Authorization: `Bearer ${authToken.access}`,
           },
         };
 
-        if (semesterId) {
-          const response = await axios.get(
-            `/proxy/roles/community/filter_notice/?faculty_batch_sem_id=${semesterId}`,
-            config
-          );
+        const response = await axios.get(
+          `/proxy/roles/community/filter_notice/?faculty_batch_sem_id=${semesterId}`,
+          config
+        );
 
-          //console.log("API Response:", response.data); // Log the API response
-
-          // Check if response.data is an array
-          if (Array.isArray(response.data)) {
-            totalNotices = totalNotices.concat(response.data);
-            noticeBySemester[semesterId] = response.data;
-          } else {
-            console.error("Expected an array, but got:", response.data);
-            setNotices([]); // Clear notices if response is not an array
-          }
+        if (Array.isArray(response.data)) {
+          totalNotices = totalNotices.concat(response.data);
+          noticeBySemester[semesterId] = response.data;
         } else {
-          setNotices([]); // Clear notices if no semester is selected
+          console.error("Expected an array, but got:", response.data);
+          setNotices([]);
         }
 
         setError("");
@@ -152,24 +138,21 @@ const DashboardPage = () => {
           duration: 3000,
           isClosable: true,
         });
-        setNotices([]); // Clear notices on error
+        setNotices([]);
       } finally {
-        setLoading(false); // Ensure loading state is reset
+        setLoading(false);
       }
     }
 
     setNotices(totalNotices);
-    // console.log(totalNotices);
     setNoticesBySemester(noticeBySemester);
   };
 
-  // Function to fetch attendance data
   const fetchAttendanceData = async () => {
-    const token = JSON.parse(localStorage.getItem("newToken"));
     const config = {
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token?.access}`,
+        Authorization: `Bearer ${authToken.access}`,
       },
     };
 
@@ -178,7 +161,6 @@ const DashboardPage = () => {
         "/proxy/roles/attendance/getdata/",
         config
       );
-      console.log("Response from API:", response);
       if (Array.isArray(response.data)) {
         setAttendanceData(response.data);
       }

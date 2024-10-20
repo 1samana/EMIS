@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import { Box, Button, Text, useToast } from "@chakra-ui/react";
 import Sidebar from "../components/Sidebar";
 import Topbar from "../components/Topbar";
 import UpdateUserPage from "./UpdateUserPage";
 import LoadingGif from "../assets/news-loading.gif";
+import { AuthContext } from "../context/AuthContext";
 
 const ListAllUser = () => {
   const [users, setUsers] = useState([]);
@@ -20,9 +21,9 @@ const ListAllUser = () => {
   );
 
   const fetchUsers = async () => {
-    const newToken = JSON.parse(localStorage.getItem("newToken"));
+    const { authToken } = useContext(AuthContext);
 
-    if (!newToken || !newToken.access) {
+    if (!authToken || !authToken.access) {
       setError("Invalid or missing token.");
       setLoading(false);
       return;
@@ -31,7 +32,7 @@ const ListAllUser = () => {
     const config = {
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${newToken.access}`,
+        Authorization: `Bearer ${authToken.access}`,
       },
     };
 
@@ -144,11 +145,10 @@ const ListAllUser = () => {
               mt={3}
               colorScheme="red"
               onClick={async () => {
-                try {
-                  const newToken = JSON.parse(localStorage.getItem("newToken"));
+                try {const { authToken } = useContext(AuthContext);
                   const config = {
                     headers: {
-                      Authorization: `Bearer ${newToken.access}`,
+                      Authorization: `Bearer ${authToken.access}`,
                     },
                   };
                   await axios.delete(`/proxy/user/delete/${userId}/`, config);

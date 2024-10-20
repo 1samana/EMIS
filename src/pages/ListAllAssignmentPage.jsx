@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect,useContext } from "react";
 import axios from "axios";
 import Sidebar from "../components/Sidebar";
 import Topbar from "../components/Topbar";
 import { Box, Table, Tbody, Td, Th, Thead, Tr, Text, useToast } from "@chakra-ui/react";
 import LoadingGif from "../assets/news-loading.gif";
+import { AuthContext } from "../context/AuthContext";
 
 
 const ListAssignmentsPage = () => {
@@ -11,13 +12,14 @@ const ListAssignmentsPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const toast = useToast();
+  
+  const { authToken } = useContext(AuthContext);
 
   const fetchAssignments = async () => {
     setLoading(true);
-    const newToken = JSON.parse(localStorage.getItem("newToken"));
     const config = {
       headers: {
-        Authorization: `Bearer ${newToken.access}`,
+        Authorization: `Bearer ${authToken.access}`,
       },
     };
 

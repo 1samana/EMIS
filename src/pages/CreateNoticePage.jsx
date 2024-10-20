@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import axios from "axios";
 import {
   Box,
@@ -9,6 +9,7 @@ import {
   Text,
   useToast,
 } from "@chakra-ui/react";
+import { AuthContext } from "../context/AuthContext";
 import Sidebar from "../components/Sidebar";
 import Topbar from "../components/Topbar";
 
@@ -18,6 +19,7 @@ const CreateNoticePage = () => {
   const [imageFile, setImageFile] = useState(null);
   const toast = useToast();
 
+  const { authToken } = useContext(AuthContext);
   const handleFileChange = (e) => {
     setImageFile(e.target.files[0]);
   };
@@ -31,10 +33,9 @@ const CreateNoticePage = () => {
     formData.append("ImageFile", imageFile);
 
     try {
-      const newToken = JSON.parse(localStorage.getItem("newToken"));
       const config = {
         headers: {
-          Authorization: `Bearer ${newToken.access}`,
+          Authorization: `Bearer ${authToken.access}`,
         },
       };
 

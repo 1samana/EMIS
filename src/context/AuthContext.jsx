@@ -24,8 +24,7 @@ export const AuthContextProvider = ({ children }) => {
   );
   const [userRole, setUserRole] = useState("");
 
-  // console.log(authToken.access);
-
+  console.log(authToken);
   // function for handleLogin
   async function handleLogin(email, password) {
     if (!email || !password) {
@@ -215,7 +214,7 @@ export const AuthContextProvider = ({ children }) => {
               colorScheme="red"
               onClick={() => {
                 localStorage.removeItem("authToken");
-                localStorage.removeItem("newToken");
+                //localStorage.removeItem("newToken");
                 setAuthToken(null);
                 setUserData(null);
                 navigate("/login");
@@ -255,7 +254,7 @@ export const AuthContextProvider = ({ children }) => {
       );
       if (result && result.data) {
         console.log("Received token response:", result.data);
-        localStorage.setItem("newToken", JSON.stringify(result.data));
+        //localStorage.setItem("newToken", JSON.stringify(result.data));
         setAuthToken({ ...authToken, access: result.data.access });
         // setUserData(jwtDecode(result.data.access));
       } else {

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import {
   Box,
@@ -11,6 +11,7 @@ import {
   Text,
   Flex,
 } from "@chakra-ui/react";
+import { AuthContext } from "../context/AuthContext";
 import Sidebar from "../components/Sidebar"; // Adjust the path as necessary
 import Topbar from "../components/Topbar"; // Adjust the path as necessary
 
@@ -22,6 +23,8 @@ const CreateAssignmentPage = () => {
   const [assignmentInText, setAssignmentInText] = useState("");
   const [batchID, setBatchID] = useState("");
   const toast = useToast();
+  
+  const { authToken } = useContext(AuthContext);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -35,10 +38,9 @@ const CreateAssignmentPage = () => {
     formData.append("batchID", batchID);
 
     try {
-      const newToken = JSON.parse(localStorage.getItem("newToken"));
       const config = {
         headers: {
-          Authorization: `Bearer ${newToken.access}`,
+          Authorization: `Bearer ${authToken.access}`,
           "Content-Type": "multipart/form-data", // Important for file upload
         },
       };

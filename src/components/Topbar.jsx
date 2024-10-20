@@ -7,7 +7,9 @@ import axios from "axios";
 const Topbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
-  const [profilePhoto, setProfilePhoto] = useState(null); // State to hold profile photo
+  const [profilePhoto, setProfilePhoto] = useState(null); 
+  
+  const { authToken } = useContext(AuthContext);// State to hold profile photo
 
   const { logoutUser } = useContext(AuthContext);
 
@@ -22,12 +24,11 @@ const Topbar = () => {
   // Fetch user profile photo on component mount
   useEffect(() => {
     const fetchUserProfile = async () => {
-      const token = JSON.parse(localStorage.getItem("newToken"));
-      if (token && token.access) {
+      if (authToken && authToken.access) {
         try {
           const response = await axios.get("/proxy/user/profile/", {
             headers: {
-              Authorization: `Bearer ${token.access}`,
+              Authorization: `Bearer ${authToken.access}`,
             },
           });
 

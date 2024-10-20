@@ -1,16 +1,20 @@
 import axios from "axios";
-import React, { useState } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useToast } from "@chakra-ui/react";
 import Sidebar from "../components/Sidebar";
 import Topbar from "../components/Topbar";
 import { MdPersonAdd } from "react-icons/md";
 import { FaUserShield } from "react-icons/fa";
 import LoadingGif from "../assets/loading-gif.gif";
+import { AuthContext } from "../context/AuthContext";
 
 function CreatePermission() {
   const [role, setRole] = useState("");
   const [permissions, setPermissions] = useState({});
   const [loading, setLoading] = useState(false);
+  
+
+  const { authToken } = useContext(AuthContext);
   //   console.log(role);
   //   console.log(permissions);
   const toast = useToast();
@@ -29,12 +33,10 @@ function CreatePermission() {
       return;
     }
 
-    const newToken = JSON.parse(localStorage.getItem("newToken"));
-
     const config = {
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${newToken.access}`,
+        Authorization: `Bearer ${authToken.access}`,
       },
     };
 
