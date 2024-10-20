@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { CloseButton } from "@chakra-ui/react";
+import LoadingGif from "../assets/news-loading.gif";
 import {
   Box,
   Button,
