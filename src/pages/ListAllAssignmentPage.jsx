@@ -6,8 +6,10 @@ import { Box, Table, Tbody, Td, Th, Thead, Tr, Text, useToast } from "@chakra-ui
 import LoadingGif from "../assets/news-loading.gif";
 import { AuthContext } from "../context/AuthContext";
 
+const BASE_URL = "http://10.5.15.11:8000";
 
-const ListAssignmentsPage = () => {
+
+const ListAllAssignmentsPage = () => {
   const [assignments, setAssignments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -87,7 +89,20 @@ const ListAssignmentsPage = () => {
                   <Tr key={assignment.assignmentID} className="bg-white even:bg-gray-100">
                     <Td className="px-4 py-2 border border-gray-300">{assignment.assignmentID}</Td>
                     <Td className="px-4 py-2 border border-gray-300">{assignment.assignmentTitle}</Td>
-                    <Td className="px-4 py-2 border border-gray-300">{assignment.assignmentInFile || "N/A"}</Td>
+                    <td className="px-4 py-2 border border-gray-300">
+                      {assignment.assignmentInFile ? (
+                        <a
+                          href={`${BASE_URL}${assignment.assignmentInFile}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-500 hover:underline"
+                        >
+                          View File
+                        </a>
+                      ) : (
+                        "N/A"
+                      )}
+                      </td>
                     <Td className="px-4 py-2 border border-gray-300">{assignment.assignmentInText || "N/A"}</Td>
                     <Td className="px-4 py-2 border border-gray-300">{new Date(assignment.created_at).toLocaleString()}</Td>
                     <Td className="px-4 py-2 border border-gray-300">{assignment.due_date}</Td>
@@ -110,4 +125,4 @@ const ListAssignmentsPage = () => {
   );
 };
 
-export default ListAssignmentsPage;
+export default ListAllAssignmentsPage;
