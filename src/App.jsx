@@ -66,11 +66,15 @@ function App() {
                 )}
                 {userRole === "Teacher" && (
                   <Routes>
+                    <Route path="/list-notice" element={<PrivateRoute><ListNoticePage /></PrivateRoute>} />
                     <Route path="/create-complaint" element={<PrivateRoute><CreateComplaintsPage /></PrivateRoute>} />
                     <Route path="/my-complaint" element={<PrivateRoute><MyComplaintsPage /></PrivateRoute>} />
+                    <Route path="/list-attendance" element={<PrivateRoute><AllAttendancePage /></PrivateRoute>} />
                     <Route path="/create-assignment" element={<PrivateRoute><CreateAssignmentPage /></PrivateRoute>} />
                     <Route path="/edit-profile" element={<PrivateRoute><EditProfile /></PrivateRoute>} />
                     <Route path="/view-profile" element={<PrivateRoute><ProfilePage /></PrivateRoute>} />
+                    <Route path="/create-qna" element={<PrivateRoute><CreateQuestionPage /></PrivateRoute>} />
+                    <Route path="/list-qna" element={<PrivateRoute><DisplayQnAPage /></PrivateRoute>} />
                     <Route path="*" element={<Navigate to="/" />} />
                   </Routes>
                 )}

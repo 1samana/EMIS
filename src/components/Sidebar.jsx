@@ -1,8 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import {
   FaHome,
-  FaChartLine,
-  FaUserShield,
   FaCog,
   FaClipboardList,
   FaUsersCog,
@@ -11,10 +9,10 @@ import {
 } from "react-icons/fa";
 import {
   MdGroup,
-  MdFeedback,
   MdArrowDropDown,
   MdArrowDropUp,
   MdPersonAdd,
+  MdFeedback,
   MdAddAlert,
   MdAnnouncement,
 } from "react-icons/md";
@@ -23,43 +21,27 @@ import { FiBell } from "react-icons/fi";
 import { Link } from "react-router-dom";
 import CreateUserPage from "../pages/CreateUserPage";
 import { IoMdAlert } from "react-icons/io";
+import { AuthContext } from "../context/AuthContext"; // Import AuthContext
 
 const Sidebar = () => {
   const [activityOpen, setActivityOpen] = useState(false);
   const [noticeOpen, setNoticeOpen] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [assignmentOpen, setAssignmentOpen] = useState(false);
-  const [qnaOpen, setQnaOpen] = useState(false); // State for QnA section
+  const [qnaOpen, setQnaOpen] = useState(false);
+  const { userRole } = useContext(AuthContext); // Get userRole from context
 
-  // Toggle for activity section
-  const handleActivityToggle = () => {
-    setActivityOpen(!activityOpen);
-  };
-
-  // Toggle for notice section
-  const handleNoticeToggle = () => {
-    setNoticeOpen(!noticeOpen);
-  };
-
-  // Toggle for create user modal
-  const handleCreateUserToggle = () => {
-    setIsOpen(!isOpen);
-  };
-
-  // Toggle for assignments section
-  const handleAssignmentToggle = () => {
-    setAssignmentOpen(!assignmentOpen);
-  };
-
-  // Toggle for QnA section
-  const handleQnaToggle = () => {
-    setQnaOpen(!qnaOpen);
-  };
+  // Toggle functions
+  const handleActivityToggle = () => setActivityOpen(!activityOpen);
+  const handleNoticeToggle = () => setNoticeOpen(!noticeOpen);
+  const handleCreateUserToggle = () => setIsOpen(!isOpen);
+  const handleAssignmentToggle = () => setAssignmentOpen(!assignmentOpen);
+  const handleQnaToggle = () => setQnaOpen(!qnaOpen);
 
   return (
     <>
       <div className="bg-white-900 h-screen min-w-64 px-4 py-4 text-blue-700 sticky top-0 left-0 overflow-y-scroll hide-scrollbar overflow-auto">
-      <div className="flex flex-col mb-6 pb-4 border-b border-gray-300">
+        <div className="flex flex-col mb-6 pb-4 border-b border-gray-300">
           <Link to="/" className="flex items-center">
             <img
               src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSbjSnLNj15Y3XFO3rlotSj1BzNU-kqk7Ek_g&s"
@@ -75,67 +57,121 @@ const Sidebar = () => {
         </div>
         <div className="text-gray-500">
           <nav className="flex flex-col space-y-4">
+            {/* Common Links for All Roles */}
             <Link
               to="/"
               className="flex items-center hover:bg-blue-500 hover:text-white p-2 rounded-lg transition-colors"
             >
               <FaHome className="mr-3" /> Dashboard
             </Link>
-            <div>
-              <button
-                onClick={handleActivityToggle}
-                className="flex items-center justify-between w-full hover:bg-blue-500 hover:text-white p-2 rounded-lg transition-colors"
-              >
-                <div className="flex items-center">
-                  <FaUsersCog className="mr-3" /> Roles{" "}
+
+            
+
+            
+
+            {/* Links for Teacher and Student Roles */}
+            {["Teacher", "Student"].includes(userRole) && (
+              <>
+              <Link
+              to="/list-notice"
+              className="flex items-center hover:bg-blue-500 hover:text-white p-2 rounded-lg transition-colors"
+            >
+              <FaClipboardList className="mr-3" /> Display Notice
+            </Link>
+                <Link
+                  to="/create-complaint"
+                  className="flex items-center hover:bg-blue-500 hover:text-white p-2 rounded-lg transition-colors"
+                >
+                  <MdAnnouncement className="mr-3" /> Create Complaints
+                </Link>
+
+                <Link
+                  to="/my-complaint"
+                  className="flex items-center hover:bg-blue-500 hover:text-white p-2 rounded-lg transition-colors"
+                >
+                  <MdAnnouncement className="mr-3" /> My Complaints
+                </Link>
+              </>
+            )}
+            {/* Teacher-Only Links */}
+            {userRole === "Teacher" && (
+              <>
+              <Link
+                      to="/create-assignment"
+                      className="flex items-center hover:bg-blue-500 hover:text-white p-2 rounded-lg transition-colors"
+                    >
+                      <MdAddAlert className="mr-3" /> Create Assignment
+                    </Link>
+                    </>
+            )}
+
+            {/* Admin-Only Links */}
+            {userRole === "Admin" && (
+              <>
+              <div>
+                  <button
+                    onClick={handleActivityToggle}
+                    className="flex items-center justify-between w-full hover:bg-blue-500 hover:text-white p-2 rounded-lg transition-colors"
+                  >
+                    <div className="flex items-center">
+                      <FaUsersCog className="mr-3" /> Roles{" "}
+                    </div>
+                    {activityOpen ? (
+                      <MdArrowDropUp className="text-xl" />
+                    ) : (
+                      <MdArrowDropDown className="text-xl" />
+                    )}
+                  </button>
+                  {activityOpen && (
+                    <div className="flex flex-col space-y-2 pl-8 mt-2">
+                      <Link
+                        to="/create/role"
+                        className="flex items-center hover:bg-blue-500 hover:text-white p-2 rounded-lg transition-colors"
+                      >
+                        <MdPersonAdd className="mr-3" /> Create Role
+                      </Link>
+
+                      <Link
+                        to="/list-roles"
+                        className="flex items-center hover:bg-blue-500 hover:text-white p-2 rounded-lg transition-colors"
+                      >
+                        <FaUserTag className="mr-3" /> Display Roles
+                      </Link>
+                    </div>
+                  )}
                 </div>
-                {activityOpen ? (
-                  <MdArrowDropUp className="text-xl" />
-                ) : (
-                  <MdArrowDropDown className="text-xl" />
+                 {/* Assignment Section */}
+                 <button
+                  onClick={handleAssignmentToggle}
+                  className="flex items-center justify-between hover:bg-blue-500 hover:text-white p-2 rounded-lg transition-colors"
+                >
+                  <div className="flex items-center">
+                    <FiBell className="mr-3" /> Assignment
+                  </div>
+                  {assignmentOpen ? (
+                    <MdArrowDropUp className="text-xl" />
+                  ) : (
+                    <MdArrowDropDown className="text-xl" />
+                  )}
+                </button>
+                {assignmentOpen && (
+                  <div className="flex flex-col space-y-2 pl-8 mt-2">
+                    <Link
+                      to="/create-assignment"
+                      className="flex items-center hover:bg-blue-500 hover:text-white p-2 rounded-lg transition-colors"
+                    >
+                      <MdAddAlert className="mr-3" /> Create Assignment
+                    </Link>
+
+                    <Link
+                      to="/list-assignment"
+                      className="flex items-center hover:bg-blue-500 hover:text-white p-2 rounded-lg transition-colors"
+                    >
+                      <IoMdAlert className="mr-3" /> Display Assignment
+                    </Link>
+                  </div>
                 )}
-              </button>
-              {activityOpen && (
-                <div className="flex flex-col space-y-2 pl-8 mt-2">
-                  <Link
-                    to="/create/role"
-                    className="flex items-center hover:bg-blue-500 hover:text-white p-2 rounded-lg transition-colors"
-                  >
-                    <MdPersonAdd className="mr-3" /> Create Role
-                  </Link>
-
-                  <Link
-                    to="/list-roles"
-                    className="flex items-center hover:bg-blue-500 hover:text-white p-2 rounded-lg transition-colors"
-                  >
-                    <FaUserTag className="mr-3" /> Display Roles
-                  </Link>
-                </div>
-              )}
-            </div>
-
-            <button
-              onClick={handleCreateUserToggle}
-              className="flex items-center hover:bg-blue-500 hover:text-white p-2 rounded-lg transition-colors"
-            >
-              <FaUserCircle className="mr-3" /> Create User
-            </button>
-
-            <Link
-              to="/list/complaints"
-              className="flex items-center hover:bg-blue-500 hover:text-white p-2 rounded-lg transition-colors"
-            >
-              <MdFeedback className="mr-3" /> Complaints
-            </Link>
-
-            <Link
-              to="/user/list"
-              className="flex items-center hover:bg-blue-500 hover:text-white p-2 rounded-lg transition-colors"
-            >
-              <MdGroup className="mr-3" /> List Users
-            </Link>
-
-            <button
+                <button
               onClick={handleNoticeToggle}
               className="flex items-center justify-between hover:bg-blue-500 hover:text-white p-2 rounded-lg transition-colors"
             >
@@ -156,7 +192,6 @@ const Sidebar = () => {
                 >
                   <MdAddAlert className="mr-3" /> Create Notice
                 </Link>
-
                 <Link
                   to="/list-notice"
                   className="flex items-center hover:bg-blue-500 hover:text-white p-2 rounded-lg transition-colors"
@@ -165,14 +200,27 @@ const Sidebar = () => {
                 </Link>
               </div>
             )}
-
-            <Link
-              to="/list-attendance"
+            <button
+              onClick={handleCreateUserToggle}
               className="flex items-center hover:bg-blue-500 hover:text-white p-2 rounded-lg transition-colors"
             >
-              <FaClipboardList className="mr-3" /> Attendance
-            </Link>
+              <FaUserCircle className="mr-3" /> Create User
+            </button>
 
+            
+
+            <Link
+              to="/user/list"
+              className="flex items-center hover:bg-blue-500 hover:text-white p-2 rounded-lg transition-colors"
+            >
+              <MdGroup className="mr-3" /> List Users
+            </Link>
+            <Link
+              to="/list/complaints"
+              className="flex items-center hover:bg-blue-500 hover:text-white p-2 rounded-lg transition-colors"
+            >
+              <MdFeedback className="mr-3" /> Complaints
+            </Link>
             <Link
               to="/create-attendance"
               className="flex items-center hover:bg-blue-500 hover:text-white p-2 rounded-lg transition-colors"
@@ -180,96 +228,62 @@ const Sidebar = () => {
               <FaClipboardList className="mr-3" /> Create Attendance
             </Link>
 
-            <button
-              onClick={handleAssignmentToggle}
-              className="flex items-center justify-between hover:bg-blue-500 hover:text-white p-2 rounded-lg transition-colors"
-            >
-              <div className="flex items-center">
-                <FiBell className="mr-3" /> Assignment
-              </div>
-              {assignmentOpen ? (
-                <MdArrowDropUp className="text-xl" />
-              ) : (
-                <MdArrowDropDown className="text-xl" />
-              )}
-            </button>
-            {assignmentOpen && (
-              <div className="flex flex-col space-y-2 pl-8 mt-2">
-                <Link
-                  to="/create-assignment"
-                  className="flex items-center hover:bg-blue-500 hover:text-white p-2 rounded-lg transition-colors"
-                >
-                  <MdAddAlert className="mr-3" /> Create Assignment
-                </Link>
 
-                <Link
-                  to="/list-assignment"
-                  className="flex items-center hover:bg-blue-500 hover:text-white p-2 rounded-lg transition-colors"
-                >
-                  <IoMdAlert className="mr-3" /> Display Assignment
-                </Link>
-              </div>
+              </>
             )}
+            {/* Links for Admin and Teacher Roles */}
+            {["Admin", "Teacher"].includes(userRole) && (
+              <>
+              <Link
+              to="/list-attendance"
+              className="flex items-center hover:bg-blue-500 hover:text-white p-2 rounded-lg transition-colors"
+            >
+              <FaClipboardList className="mr-3" /> Attendance
+            </Link>
+               
+                 
 
-            {/* QnA Section */}
-            <div>
-              <button
-                onClick={handleQnaToggle}
-                className="flex items-center justify-between hover:bg-blue-500 hover:text-white p-2 rounded-lg transition-colors"
-              >
-                <div className="flex items-center">
-                  <FaClipboardList className="mr-3" /> QnA
-                </div>
-                {qnaOpen ? (
-                  <MdArrowDropUp className="text-xl" />
-                ) : (
-                  <MdArrowDropDown className="text-xl" />
+           
+
+
+                {/* QnA Section */}
+                <button
+                  onClick={handleQnaToggle}
+                  className="flex items-center justify-between hover:bg-blue-500 hover:text-white p-2 rounded-lg transition-colors"
+                >
+                  <div className="flex items-center">
+                    <FaClipboardList className="mr-3" /> QnA
+                  </div>
+                  {qnaOpen ? (
+                    <MdArrowDropUp className="text-xl" />
+                  ) : (
+                    <MdArrowDropDown className="text-xl" />
+                  )}
+                </button>
+                {qnaOpen && (
+                  <div className="flex flex-col space-y-2 pl-8 mt-2">
+                    <Link
+                      to="/create-qna"
+                      className="flex items-center hover:bg-blue-500 hover:text-white p-2 rounded-lg transition-colors"
+                    >
+                      <MdAddAlert className="mr-3" /> Create QnA
+                    </Link>
+
+                    <Link
+                      to="/list-qna"
+                      className="flex items-center hover:bg-blue-500 hover:text-white p-2 rounded-lg transition-colors"
+                    >
+                      <IoMdAlert className="mr-3" /> Display QnA
+                    </Link>
+                  </div>
                 )}
-              </button>
-              {qnaOpen && (
-                <div className="flex flex-col space-y-2 pl-8 mt-2">
-                  <Link
-                    to="/create-qna"
-                    className="flex items-center hover:bg-blue-500 hover:text-white p-2 rounded-lg transition-colors"
-                  >
-                    <MdAddAlert className="mr-3" /> Create QnA
-                  </Link>
-
-                  <Link
-                    to="/list-qna"
-                    className="flex items-center hover:bg-blue-500 hover:text-white p-2 rounded-lg transition-colors"
-                  >
-                    <IoMdAlert className="mr-3" /> Display QnA
-                  </Link>
-                </div>
-              )}
-            </div>
-
+              </>
+            )}
             <Link
               to="/settings"
               className="flex items-center hover:bg-blue-500 hover:text-white p-2 rounded-lg transition-colors"
             >
               <FaCog className="mr-3" /> Settings
-            </Link>
-
-            <Link
-              to="/notifications"
-              className="flex items-center hover:bg-blue-500 hover:text-white p-2 rounded-lg transition-colors"
-            >
-              <AiOutlineNotification className="mr-3" /> Notification
-            </Link>
-
-            <Link
-              to="/create-complaint"
-              className="flex items-center hover:bg-blue-500 hover:text-white p-2 rounded-lg transition-colors"
-            >
-              <MdAnnouncement className="mr-3" /> create Complaints
-            </Link>
-            <Link
-              to="/my-complaint"
-              className="flex items-center hover:bg-blue-500 hover:text-white p-2 rounded-lg transition-colors"
-            >
-              <MdAnnouncement className="mr-3" /> My Complaints
             </Link>
           </nav>
         </div>

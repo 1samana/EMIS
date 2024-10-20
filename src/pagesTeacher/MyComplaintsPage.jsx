@@ -4,7 +4,7 @@ import axios from "axios";
 const BASE_URL = "http://10.5.15.11:8000";
 
 // Modal Component
-const EditModal = ({ isOpen, onClose, onSave, editFormData, handleEditChange }) => {
+const EditModal = ({ isOpen, onClose, onSave, editFormData, handleEditChange, handlePhotoChange }) => {
   if (!isOpen) return null; // Don't render the modal if it's not open
 
   return (
@@ -39,6 +39,24 @@ const EditModal = ({ isOpen, onClose, onSave, editFormData, handleEditChange }) 
               className="border w-full p-2"
             />
           </div>
+          <div className="mb-4">
+            <label className="block mb-1">Photo</label>
+            <input
+              type="file"
+              name="photo"
+              onChange={handlePhotoChange}
+              className="border w-full p-2"
+            />
+            {editFormData.photo && (
+              <div className="mt-2">
+                <img
+                  src={`${BASE_URL}${editFormData.photo}`}
+                  alt="Current photo"
+                  className="h-24 w-24 object-cover"
+                />
+              </div>
+            )}
+          </div>
           <div className="flex justify-end">
             <button type="button" onClick={onClose} className="bg-gray-500 text-white px-3 py-1 rounded mr-2">
               Cancel
@@ -64,7 +82,9 @@ const MyComplaintsPage = () => {
     title: "",
     description: "",
     suggestion: "",
+    photo: null, // For storing the photo URL or file
   });
+  const [photoFile, setPhotoFile] = useState(null); // To store the new photo file
 
   const fetchComplaints = async (page) => {
     setLoading(true);
@@ -111,12 +131,19 @@ const MyComplaintsPage = () => {
     setEditFormData({ ...editFormData, [name]: value });
   };
 
+  const handlePhotoChange = (e) => {
+    const file = e.target.files[0];
+    setPhotoFile(file); // Store the new photo file
+    setEditFormData({ ...editFormData, photo: URL.createObjectURL(file) }); // Update the formData with the new photo URL
+  };
+
   const startEditing = (complaint) => {
     setEditComplaintId(complaint.complainID);
     setEditFormData({
       title: complaint.title,
       description: complaint.description,
       suggestion: complaint.suggestion,
+      photo: complaint.photo, // Existing photo
     });
     setIsModalOpen(true); // Open the modal
   };
@@ -125,27 +152,43 @@ const MyComplaintsPage = () => {
     try {
       const tokenString = localStorage.getItem("newToken");
       const newToken = tokenString ? JSON.parse(tokenString) : null;
-
+  
       const config = {
         headers: {
           Authorization: `Bearer ${newToken.access}`,
+          "Content-Type": "multipart/form-data", // Ensure the form data is correctly handled
         },
       };
-
+  
+      const formData = new FormData();
+      formData.append("title", editFormData.title);
+      formData.append("description", editFormData.description);
+      formData.append("suggestion", editFormData.suggestion);
+  
+      if (photoFile) {
+        formData.append("photo", photoFile); // Add the new photo if updated
+      }
+  
       const response = await axios.put(
         `/proxy/roles/complaints/edit/${editComplaintId}/`,
-        editFormData,
+        formData,
         config
       );
-      console.log("Edit Response:", response.data);
-
+  
+      const updatedComplaint = response.data; // Assuming the response contains the updated complaint, including the new photo URL
+  
+      // Create cache-busting URL by appending a timestamp to the image URL
+      const updatedPhotoUrl = `${BASE_URL}${updatedComplaint.photo}?${new Date().getTime()}`;
+  
+      // Update the complaints list with the updated complaint (including the cache-busted photo URL)
       setComplaints((prevComplaints) =>
         prevComplaints.map((complaint) =>
           complaint.complainID === editComplaintId
-            ? { ...complaint, ...editFormData }
+            ? { ...complaint, ...updatedComplaint, photo: updatedPhotoUrl } // Update the complaint with cache-busting URL for the photo
             : complaint
         )
       );
+  
       setEditComplaintId(null);
       setIsModalOpen(false); // Close the modal after saving
     } catch (error) {
@@ -153,6 +196,8 @@ const MyComplaintsPage = () => {
       setError(error.message || "Failed to edit complaint");
     }
   };
+  
+  
 
   const deleteComplaint = async (complaintId) => {
     try {
@@ -234,15 +279,15 @@ const MyComplaintsPage = () => {
                         {complaint.suggestion}
                       </td>
                       <td className="px-4 py-2 border border-gray-300 h-20 w-20 overflow-hidden">
-                        <img
-                          src={`${BASE_URL}${complaint.photo}`}
-                          onClick={() =>
-                            window.open(`${BASE_URL}${complaint.photo}`)
-                          }
-                          alt="img"
-                          className="w-full h-full cursor-pointer transition-all hover:scale-125  hover:ease-in-out duration-200"
-                        />
-                      </td>
+                      <img
+                        src={`${BASE_URL}${complaint.photo}`}
+                        onClick={() =>
+                          window.open(`${BASE_URL}${complaint.photo}`)
+                        }
+                        alt="Complaint"
+                        className="w-full h-full object-cover"
+                      />
+                    </td>
                       <td className="px-4 py-2 border border-gray-300">
                         {new Date(complaint.date).toLocaleDateString()}
                       </td>
@@ -284,6 +329,7 @@ const MyComplaintsPage = () => {
         onSave={saveEdit}
         editFormData={editFormData}
         handleEditChange={handleEditChange}
+        handlePhotoChange={handlePhotoChange} 
       />
     </div>
   );
