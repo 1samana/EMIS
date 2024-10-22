@@ -29,8 +29,8 @@ const SimpleTable = () => {
 
     try {
       const response = await axios.get("/proxy/roles/list/complaints/", config);
-      setData(response.data);
-      console.log(`list complaints data ${response.data}`);
+      setData(response.data.results);
+      //console.log(`list complaints data ${response.data}`);
       setLoading(false);
     } catch (error) {
       console.error("Error fetching complaints:", error);

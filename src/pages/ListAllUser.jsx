@@ -1,10 +1,9 @@
 import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import { Box, Button, Text, useToast } from "@chakra-ui/react";
-import Sidebar from "../components/Sidebar";
-import Topbar from "../components/Topbar";
+
 import UpdateUserPage from "./UpdateUserPage";
-import LoadingGif from "../assets/news-loading.gif";
+import LoadingGif from "../assets/loading-gif.gif";
 import { AuthContext } from "../context/AuthContext";
 
 const ListAllUser = () => {
@@ -16,12 +15,14 @@ const ListAllUser = () => {
   const [defaultFormData, setDefaultFormData] = useState({});
   const toast = useToast();
 
+  const { authToken } = useContext(AuthContext);
+
   console.log(
     `Form data from state ${JSON.stringify(defaultFormData, null, 2)}`
   );
 
   const fetchUsers = async () => {
-    const { authToken } = useContext(AuthContext);
+    // const newToken = JSON.parse(localStorage.getItem("newToken"));
 
     if (!authToken || !authToken.access) {
       setError("Invalid or missing token.");
@@ -145,7 +146,8 @@ const ListAllUser = () => {
               mt={3}
               colorScheme="red"
               onClick={async () => {
-                try {const { authToken } = useContext(AuthContext);
+                try {
+                  // const newToken = JSON.parse(localStorage.getItem("newToken"));
                   const config = {
                     headers: {
                       Authorization: `Bearer ${authToken.access}`,
@@ -204,7 +206,7 @@ const ListAllUser = () => {
   if (loading) {
     return (
       <div className="text-3xl font-bold h-screen flex flex-col justify-center items-center ">
-        <img src={LoadingGif} alt="Loading..." className="w-52" />
+        <img src={LoadingGif} alt="Loading..." className="w-14" />
         <p className="text-xl font-semibold">Loading users...</p>
       </div>
     );
@@ -212,9 +214,10 @@ const ListAllUser = () => {
 
   return (
     <>
-      
+      <div className="flex">
+        <div className="flex-grow bg-gray-100 min-h-screen">
           <div className="px-6">
-            <div className="container mx-auto mt-10">
+            <div className="container mx-auto ">
               {error && <div className="text-red-500">{error}</div>}
               {/* Buttons for filtering */}
               <div className="mb-4">
@@ -308,7 +311,10 @@ const ListAllUser = () => {
               </table>
             </div>
           </div>
+        </div>
+      </div>
 
+      {/* Modal for Update User Page */}
       {toggleUpdate && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-80">
           <div className=" p-4 rounded-lg max-w-lg w-full">

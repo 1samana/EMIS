@@ -5,7 +5,14 @@ import { AuthContext } from "../context/AuthContext";
 const BASE_URL = "http://10.5.15.11:8000";
 
 // Modal Component
-const EditModal = ({ isOpen, onClose, onSave, editFormData, handleEditChange, handlePhotoChange }) => {
+const EditModal = ({
+  isOpen,
+  onClose,
+  onSave,
+  editFormData,
+  handleEditChange,
+  handlePhotoChange,
+}) => {
   if (!isOpen) return null; // Don't render the modal if it's not open
 
   return (
@@ -59,10 +66,18 @@ const EditModal = ({ isOpen, onClose, onSave, editFormData, handleEditChange, ha
             )}
           </div>
           <div className="flex justify-end">
-            <button type="button" onClick={onClose} className="bg-gray-500 text-white px-3 py-1 rounded mr-2">
+            <button
+              type="button"
+              onClick={onClose}
+              className="bg-gray-500 text-white px-3 py-1 rounded mr-2"
+            >
               Cancel
             </button>
-            <button type="button" onClick={onSave} className="bg-blue-500 text-white px-3 py-1 rounded">
+            <button
+              type="button"
+              onClick={onSave}
+              className="bg-blue-500 text-white px-3 py-1 rounded"
+            >
               Save
             </button>
           </div>
@@ -153,34 +168,36 @@ const MyComplaintsPage = () => {
     try {
       const tokenString = localStorage.getItem("authToken");
       const authToken = tokenString ? JSON.parse(tokenString) : null;
-  
+
       const config = {
         headers: {
           Authorization: `Bearer ${authToken.access}`,
           "Content-Type": "multipart/form-data", // Ensure the form data is correctly handled
         },
       };
-  
+
       const formData = new FormData();
       formData.append("title", editFormData.title);
       formData.append("description", editFormData.description);
       formData.append("suggestion", editFormData.suggestion);
-  
+
       if (photoFile) {
         formData.append("photo", photoFile); // Add the new photo if updated
       }
-  
+
       const response = await axios.put(
         `/proxy/roles/complaints/edit/${editComplaintId}/`,
         formData,
         config
       );
-  
+
       const updatedComplaint = response.data; // Assuming the response contains the updated complaint, including the new photo URL
-  
+
       // Create cache-busting URL by appending a timestamp to the image URL
-      const updatedPhotoUrl = `${BASE_URL}${updatedComplaint.photo}?${new Date().getTime()}`;
-  
+      const updatedPhotoUrl = `${BASE_URL}${
+        updatedComplaint.photo
+      }?${new Date().getTime()}`;
+
       // Update the complaints list with the updated complaint (including the cache-busted photo URL)
       setComplaints((prevComplaints) =>
         prevComplaints.map((complaint) =>
@@ -189,7 +206,7 @@ const MyComplaintsPage = () => {
             : complaint
         )
       );
-  
+
       setEditComplaintId(null);
       setIsModalOpen(false); // Close the modal after saving
     } catch (error) {
@@ -197,8 +214,6 @@ const MyComplaintsPage = () => {
       setError(error.message || "Failed to edit complaint");
     }
   };
-  
-  
 
   const deleteComplaint = async (complaintId) => {
     try {
@@ -280,22 +295,22 @@ const MyComplaintsPage = () => {
                         {complaint.suggestion}
                       </td>
                       <td className="px-4 py-2 border border-gray-300 h-20 w-20 overflow-hidden">
-                      <img
-                        src={`${BASE_URL}${complaint.photo}`}
-                        onClick={() =>
-                          window.open(`${BASE_URL}${complaint.photo}`)
-                        }
-                        alt="Complaint"
-                        className="w-full h-full object-cover"
-                      />
-                    </td>
+                        <img
+                          src={`${BASE_URL}${complaint.photo}`}
+                          onClick={() =>
+                            window.open(`${BASE_URL}${complaint.photo}`)
+                          }
+                          alt="Complaint"
+                          className="w-full h-full object-cover"
+                        />
+                      </td>
                       <td className="px-4 py-2 border border-gray-300">
                         {new Date(complaint.date).toLocaleDateString()}
                       </td>
                       <td className="px-4 py-2 border border-gray-300">
                         {isSolved ? "Solved" : "Pending"}
                       </td>
-                      <td className="px-4 py-2 border border-gray-300">
+                      <td className="px-4 py-2 flex justify-center items-center">
                         <button
                           onClick={() => startEditing(complaint)}
                           className={`bg-blue-600 text-white px-2 py-1 rounded ${
@@ -330,7 +345,7 @@ const MyComplaintsPage = () => {
         onSave={saveEdit}
         editFormData={editFormData}
         handleEditChange={handleEditChange}
-        handlePhotoChange={handlePhotoChange} 
+        handlePhotoChange={handlePhotoChange}
       />
     </div>
   );

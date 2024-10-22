@@ -78,7 +78,7 @@ const ProfilePage = ({ closeModal }) => { // Accept closeModal as a prop
       <div className="bg-white shadow-lg rounded-lg w-full max-w-3xl p-6 flex">
         {/* Left Side */}
         <div className="w-1/2 px-6 pt-0 pb-6">
-          <h1 className="text-4xl font-bold text-blue-600">{profile.Father_name}</h1>
+          <h1 className="text-4xl font-bold text-blue-600">{profile.username}</h1>
           <span className="text-black">
             <p className="text-lg text-black">{role}</p>
           </span>

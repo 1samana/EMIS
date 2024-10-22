@@ -46,8 +46,8 @@ const AllAttendancePage = () => {
         config
       );
       console.log("Response from API:", response);
-      if (Array.isArray(response.data)) {
-        setAttendanceData(response.data);
+      if (Array.isArray(response.data.results)) {
+        setAttendanceData(response.data.results);
       }
       // setAttendanceData(Array.isArray(response.data) ? response.data : []);
       setError("");
@@ -74,7 +74,7 @@ const AllAttendancePage = () => {
         `/proxy/roles/attendance/getdata/?userID=${userID}`,
         config
       );
-      setAttendanceData(response.data);
+      setAttendanceData(response.data.results);
       setError("");
     } catch (error) {
       toast({
@@ -94,7 +94,7 @@ const AllAttendancePage = () => {
         `/proxy/roles/attendance/getdata/?subjectID=${subjectID}`,
         config
       );
-      setAttendanceData(response.data);
+      setAttendanceData(response.data.results);
     } catch (error) {
       toast({
         title: "Failed to fetch attendance data for the subject.",
@@ -114,7 +114,7 @@ const AllAttendancePage = () => {
         `/proxy/roles/attendance/getdata/?date=${selectedDate}`,
         config
       );
-      setAttendanceData(response.data);
+      setAttendanceData(response.data.results);
     } catch (error) {
       setError("Failed to fetch attendance data for the date.");
     }
@@ -138,8 +138,8 @@ const AllAttendancePage = () => {
         config
       );
 
-      console.log(response.data);
-      setAttendanceData(response.data);
+      console.log(response.data.results);
+      setAttendanceData(response.data.results);
     } catch (error) {
       console.log(error);
     }

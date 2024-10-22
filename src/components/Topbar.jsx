@@ -7,9 +7,9 @@ import axios from "axios";
 const Topbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
-  const [profilePhoto, setProfilePhoto] = useState(null); 
-  
-  const { authToken } = useContext(AuthContext);// State to hold profile photo
+  const [profilePhoto, setProfilePhoto] = useState(null);
+
+  const { authToken } = useContext(AuthContext); // State to hold profile photo
 
   const { logoutUser } = useContext(AuthContext);
 
@@ -66,7 +66,7 @@ const Topbar = () => {
               {/* Dynamically display user profile photo */}
               <img
                 src={profilePhoto || "https://via.placeholder.com/150"} // Fallback image if no photo is available
-                alt="User Avatar"
+                alt="pp"
                 className="w-full h-full rounded-full"
               />
             </button>
@@ -109,7 +109,9 @@ const Topbar = () => {
             </button>
 
             {/* ProfilePage Content */}
-            <div className="p-4"> {/* Adjust padding here */}
+            <div className="p-4">
+              {" "}
+              {/* Adjust padding here */}
               <ProfilePage closeModal={handleViewProfileToggle} />
             </div>
           </div>

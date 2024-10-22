@@ -6,6 +6,9 @@ import {
   FaUsersCog,
   FaUserTag,
   FaUserCircle,
+  FaLock,
+  FaUserCheck,
+  FaUser,
 } from "react-icons/fa";
 import {
   MdGroup,
@@ -15,6 +18,7 @@ import {
   MdFeedback,
   MdAddAlert,
   MdAnnouncement,
+  MdAssignment,
 } from "react-icons/md";
 import { AiOutlineNotification } from "react-icons/ai";
 import { FiBell } from "react-icons/fi";
@@ -29,6 +33,7 @@ const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [assignmentOpen, setAssignmentOpen] = useState(false);
   const [qnaOpen, setQnaOpen] = useState(false);
+  const [isPermissionOpen, setIsPermissionOpen] = useState(false);
   const { userRole } = useContext(AuthContext); // Get userRole from context
 
   // Toggle functions
@@ -37,6 +42,7 @@ const Sidebar = () => {
   const handleCreateUserToggle = () => setIsOpen(!isOpen);
   const handleAssignmentToggle = () => setAssignmentOpen(!assignmentOpen);
   const handleQnaToggle = () => setQnaOpen(!qnaOpen);
+  const handlePermissionToggle = () => setIsPermissionOpen(!isPermissionOpen);
 
   return (
     <>
@@ -65,19 +71,15 @@ const Sidebar = () => {
               <FaHome className="mr-3" /> Dashboard
             </Link>
 
-            
-
-            
-
             {/* Links for Teacher and Student Roles */}
             {["Teacher", "Student"].includes(userRole) && (
               <>
-              <Link
-              to="/list-notice"
-              className="flex items-center hover:bg-blue-500 hover:text-white p-2 rounded-lg transition-colors"
-            >
-              <FaClipboardList className="mr-3" /> Display Notice
-            </Link>
+                <Link
+                  to="/list-notice"
+                  className="flex items-center hover:bg-blue-500 hover:text-white p-2 rounded-lg transition-colors"
+                >
+                  <FaClipboardList className="mr-3" /> Display Notice
+                </Link>
                 <Link
                   to="/create-complaint"
                   className="flex items-center hover:bg-blue-500 hover:text-white p-2 rounded-lg transition-colors"
@@ -96,19 +98,19 @@ const Sidebar = () => {
             {/* Teacher-Only Links */}
             {userRole === "Teacher" && (
               <>
-              <Link
-                      to="/create-assignment"
-                      className="flex items-center hover:bg-blue-500 hover:text-white p-2 rounded-lg transition-colors"
-                    >
-                      <MdAddAlert className="mr-3" /> Create Assignment
-                    </Link>
-                    </>
+                <Link
+                  to="/create-assignment"
+                  className="flex items-center hover:bg-blue-500 hover:text-white p-2 rounded-lg transition-colors"
+                >
+                  <MdAddAlert className="mr-3" /> Create Assignment
+                </Link>
+              </>
             )}
 
             {/* Admin-Only Links */}
             {userRole === "Admin" && (
               <>
-              <div>
+                <div>
                   <button
                     onClick={handleActivityToggle}
                     className="flex items-center justify-between w-full hover:bg-blue-500 hover:text-white p-2 rounded-lg transition-colors"
@@ -140,13 +142,53 @@ const Sidebar = () => {
                     </div>
                   )}
                 </div>
-                 {/* Assignment Section */}
-                 <button
+                {/* Permission section */}
+                <div>
+                  <button
+                    onClick={handlePermissionToggle}
+                    className="flex items-center justify-between w-full hover:bg-blue-500 hover:text-white p-2 rounded-lg transition-colors"
+                  >
+                    <div className="flex items-center">
+                      <div
+                        className="user-with-lock-icon"
+                        style={{ display: "flex", alignItems: "center" }}
+                      >
+                        <FaUser style={{ fontSize: "10px" }} />
+                        <FaLock style={{ fontSize: "10px" }} />
+                        <span style={{ marginLeft: "8px" }}>Permissions</span>
+                      </div>
+                    </div>
+                    {activityOpen ? (
+                      <MdArrowDropUp className="text-xl" />
+                    ) : (
+                      <MdArrowDropDown className="text-xl" />
+                    )}
+                  </button>
+                  {isPermissionOpen && (
+                    <div className="flex flex-col space-y-2 pl-8 mt-2">
+                      <Link
+                        to="/create/permission"
+                        className="flex items-center hover:bg-blue-500 hover:text-white p-2 rounded-lg transition-colors"
+                      >
+                        <MdPersonAdd className="mr-3" /> Create Permission
+                      </Link>
+
+                      <Link
+                        to="/list/permission"
+                        className="flex items-center hover:bg-blue-500 hover:text-white p-2 rounded-lg transition-colors"
+                      >
+                        <FaUserTag className="mr-3" /> List Permission
+                      </Link>
+                    </div>
+                  )}
+                </div>
+                {/* Assignment Section */}
+                <button
                   onClick={handleAssignmentToggle}
                   className="flex items-center justify-between hover:bg-blue-500 hover:text-white p-2 rounded-lg transition-colors"
                 >
                   <div className="flex items-center">
-                    <FiBell className="mr-3" /> Assignment
+                    <MdAssignment className="mr-3" /> Assignment
                   </div>
                   {assignmentOpen ? (
                     <MdArrowDropUp className="text-xl" />
@@ -172,79 +214,70 @@ const Sidebar = () => {
                   </div>
                 )}
                 <button
-              onClick={handleNoticeToggle}
-              className="flex items-center justify-between hover:bg-blue-500 hover:text-white p-2 rounded-lg transition-colors"
-            >
-              <div className="flex items-center">
-                <FiBell className="mr-3" /> Notice
-              </div>
-              {noticeOpen ? (
-                <MdArrowDropUp className="text-xl" />
-              ) : (
-                <MdArrowDropDown className="text-xl" />
-              )}
-            </button>
-            {noticeOpen && (
-              <div className="flex flex-col space-y-2 pl-8 mt-2">
-                <Link
-                  to="/create-notice"
+                  onClick={handleNoticeToggle}
+                  className="flex items-center justify-between hover:bg-blue-500 hover:text-white p-2 rounded-lg transition-colors"
+                >
+                  <div className="flex items-center">
+                    <FiBell className="mr-3" /> Notice
+                  </div>
+                  {noticeOpen ? (
+                    <MdArrowDropUp className="text-xl" />
+                  ) : (
+                    <MdArrowDropDown className="text-xl" />
+                  )}
+                </button>
+                {noticeOpen && (
+                  <div className="flex flex-col space-y-2 pl-8 mt-2">
+                    <Link
+                      to="/create-notice"
+                      className="flex items-center hover:bg-blue-500 hover:text-white p-2 rounded-lg transition-colors"
+                    >
+                      <MdAddAlert className="mr-3" /> Create Notice
+                    </Link>
+                    <Link
+                      to="/list-notice"
+                      className="flex items-center hover:bg-blue-500 hover:text-white p-2 rounded-lg transition-colors"
+                    >
+                      <IoMdAlert className="mr-3" /> Display Notice
+                    </Link>
+                  </div>
+                )}
+                <button
+                  onClick={handleCreateUserToggle}
                   className="flex items-center hover:bg-blue-500 hover:text-white p-2 rounded-lg transition-colors"
                 >
-                  <MdAddAlert className="mr-3" /> Create Notice
-                </Link>
+                  <FaUserCircle className="mr-3" /> Create User
+                </button>
+
                 <Link
-                  to="/list-notice"
+                  to="/user/list"
                   className="flex items-center hover:bg-blue-500 hover:text-white p-2 rounded-lg transition-colors"
                 >
-                  <IoMdAlert className="mr-3" /> Display Notice
+                  <MdGroup className="mr-3" /> List Users
                 </Link>
-              </div>
-            )}
-            <button
-              onClick={handleCreateUserToggle}
-              className="flex items-center hover:bg-blue-500 hover:text-white p-2 rounded-lg transition-colors"
-            >
-              <FaUserCircle className="mr-3" /> Create User
-            </button>
-
-            
-
-            <Link
-              to="/user/list"
-              className="flex items-center hover:bg-blue-500 hover:text-white p-2 rounded-lg transition-colors"
-            >
-              <MdGroup className="mr-3" /> List Users
-            </Link>
-            <Link
-              to="/list/complaints"
-              className="flex items-center hover:bg-blue-500 hover:text-white p-2 rounded-lg transition-colors"
-            >
-              <MdFeedback className="mr-3" /> Complaints
-            </Link>
-            <Link
-              to="/create-attendance"
-              className="flex items-center hover:bg-blue-500 hover:text-white p-2 rounded-lg transition-colors"
-            >
-              <FaClipboardList className="mr-3" /> Create Attendance
-            </Link>
-
-
+                <Link
+                  to="/list/complaints"
+                  className="flex items-center hover:bg-blue-500 hover:text-white p-2 rounded-lg transition-colors"
+                >
+                  <MdFeedback className="mr-3" /> Complaints
+                </Link>
+                <Link
+                  to="/create-attendance"
+                  className="flex items-center hover:bg-blue-500 hover:text-white p-2 rounded-lg transition-colors"
+                >
+                  <FaClipboardList className="mr-3" /> Create Attendance
+                </Link>
               </>
             )}
             {/* Links for Admin and Teacher Roles */}
             {["Admin", "Teacher"].includes(userRole) && (
               <>
-              <Link
-              to="/list-attendance"
-              className="flex items-center hover:bg-blue-500 hover:text-white p-2 rounded-lg transition-colors"
-            >
-              <FaClipboardList className="mr-3" /> Attendance
-            </Link>
-               
-                 
-
-           
-
+                <Link
+                  to="/list-attendance"
+                  className="flex items-center hover:bg-blue-500 hover:text-white p-2 rounded-lg transition-colors"
+                >
+                  <FaClipboardList className="mr-3" /> Attendance
+                </Link>
 
                 {/* QnA Section */}
                 <button
