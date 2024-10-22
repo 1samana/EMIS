@@ -1,7 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
-import Sidebar from "../components/Sidebar";
-import Topbar from "../components/Topbar";
 import {
   Box,
   Table,
@@ -14,6 +12,10 @@ import {
   useToast,
   Button,
   Input,
+  Collapse,
+  FormControl,
+  FormLabel,
+  Flex,
 } from "@chakra-ui/react";
 import { AuthContext } from "../context/AuthContext";
 import LoadingGif from "../assets/news-loading.gif";
@@ -23,13 +25,15 @@ const DisplayQnAPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
+  const [expandedQnAId, setExpandedQnAId] = useState(null);
+  const [userID, setUserID] = useState("");
+  const [subjectID, setSubjectID] = useState("");
   const toast = useToast();
+  const { authToken } = useContext(AuthContext);
 
   const fetchQnAs = async () => {
     setLoading(true);
-    
-const { authToken } = useContext(AuthContext); 
-const config = {
+    const config = {
       headers: {
         Authorization: `Bearer ${authToken.access}`,
       },
@@ -60,8 +64,41 @@ const config = {
     }
   };
 
+  const handleFilterQuestions = async () => {
+    setLoading(true);
+    const config = {
+      headers: {
+        Authorization: `Bearer ${authToken.access}`,
+      },
+    };
+
+    try {
+      const response = await axios.post(
+        `/proxy/roles/community/filterQuestions/`,
+        { userID, subjectID },
+        config
+      );
+      setQnas(response.data);
+      setError("");
+    } catch (error) {
+      console.error("Error filtering questions:", error);
+      setError("Failed to filter questions.");
+      toast({
+        title: "Error filtering questions",
+        description:
+          error.response?.data?.message ||
+          "An error occurred while filtering questions.",
+        status: "error",
+        position: "top-right",
+        duration: 3000,
+        isClosable: true,
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleDeleteQnA = async (id) => {
-    const { authToken } = useContext(AuthContext);
     const config = {
       headers: {
         Authorization: `Bearer ${authToken.access}`,
@@ -94,10 +131,8 @@ const config = {
     }
   };
 
-  const filteredQnAs = qnas.filter(
-    (qna) =>
-      qna.question.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      qna.answer.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredQnAs = qnas.filter((qna) =>
+    qna.questionName.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   useEffect(() => {
@@ -115,10 +150,7 @@ const config = {
 
   return (
     <Box display="flex">
-      
-      <Box flex="1" bg="gray.100">
-      
-
+      <Box flex="1">
         <Text fontSize="2xl" mt="4" textAlign="center">
           List of QnAs
         </Text>
@@ -126,12 +158,64 @@ const config = {
         {error && <Text color="red.500">{error}</Text>}
 
         <Box p="6">
-          <Input
-            placeholder="Search QnAs..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            mb="4"
-          />
+          {/* Flex container for horizontal filtering */}
+          <Flex mb="6" alignItems="center" gap="4" direction={{ base: 'column', md: 'row' }}>
+  <FormControl flex="1">
+    <Input
+      placeholder="Enter User ID"
+      value={userID}
+      onChange={(e) => setUserID(e.target.value)}
+      backgroundColor="white"    
+      borderColor="gray.300"
+      _hover={{ borderColor: 'gray.500' }}
+      _focus={{ borderColor: 'teal.500' }}
+      padding="6"
+      borderRadius="md"
+    />
+  </FormControl>
+  
+  <FormControl flex="1">
+    <Input
+      placeholder="Enter Subject ID"
+      value={subjectID}
+      onChange={(e) => setSubjectID(e.target.value)}
+      backgroundColor="white"    
+      borderColor="gray.300"
+      _hover={{ borderColor: 'gray.500' }}
+      _focus={{ borderColor: 'teal.500' }}
+      padding="6"
+      borderRadius="md"
+    />
+  </FormControl>
+  
+  <Input
+    placeholder="Search QnAs..."
+    value={searchTerm}
+    onChange={(e) => setSearchTerm(e.target.value)}
+    backgroundColor="white"  
+    flex="2"
+    borderColor="gray.300"
+    _hover={{ borderColor: 'gray.500' }}
+    _focus={{ borderColor: 'teal.500' }}
+    padding="6"
+    borderRadius="md"
+  />
+</Flex>
+
+<Button
+  bg="blue.600"       
+  color="white"       
+  _hover={{ bg: "blue.700" }}  
+  _active={{ bg: "blue.800" }} 
+  onClick={handleFilterQuestions}
+  size="lg"
+  boxShadow="lg"
+  paddingX="8"
+>
+  Filter Questions
+</Button>
+
+
           <Table className="min-w-full table-auto border-collapse border border-gray-200">
             <Thead>
               <Tr className="bg-blue-500">
@@ -139,10 +223,16 @@ const config = {
                   QnA ID
                 </Th>
                 <Th className="px-4 py-2 border border-gray-300" color="white">
-                  Question
+                  Subject ID
                 </Th>
                 <Th className="px-4 py-2 border border-gray-300" color="white">
-                  Answer
+                  Posted By
+                </Th>
+                <Th className="px-4 py-2 border border-gray-300" color="white">
+                  Date
+                </Th>
+                <Th className="px-4 py-2 border border-gray-300" color="white">
+                  Question
                 </Th>
                 <Th className="px-4 py-2 border border-gray-300" color="white">
                   Actions
@@ -152,30 +242,91 @@ const config = {
             <Tbody>
               {filteredQnAs.length > 0 ? (
                 filteredQnAs.map((qna) => (
-                  <Tr key={qna.id} className="bg-white even:bg-gray-100">
-                    <Td className="px-4 py-2 border border-gray-300">
-                      {qna.id}
-                    </Td>
-                    <Td className="px-4 py-2 border border-gray-300">
-                      {qna.question}
-                    </Td>
-                    <Td className="px-4 py-2 border border-gray-300">
-                      {qna.answer}
-                    </Td>
-                    <Td className="px-4 py-2 border border-gray-300">
-                      <Button
-                        colorScheme="red"
-                        onClick={() => handleDeleteQnA(qna.id)}
-                      >
-                        Delete
-                      </Button>
-                      {/* Add Edit functionality button here */}
-                    </Td>
-                  </Tr>
+                  <React.Fragment key={qna.qid}>
+                    <Tr className="bg-white even:bg-gray-100">
+                      <Td className="px-4 py-2 border border-gray-300">
+                        {qna.qid}
+                      </Td>
+                      <Td className="px-4 py-2 border border-gray-300">
+                        {qna.subjectID}
+                      </Td>
+                      <Td className="px-4 py-2 border border-gray-300">
+                        {qna.userID}
+                      </Td>
+                      <td className="px-4 py-2 border border-gray-300">
+                        {new Date(qna.date).toLocaleString()}
+                      </td>
+                      <Td className="px-4 py-2 border border-gray-300">
+                        {qna.questionName}
+                      </Td>
+                      <Td className="px-4 py-2 border border-gray-300">
+                        <Button
+                          colorScheme="blue"
+                          onClick={() => {
+                            setExpandedQnAId(
+                              expandedQnAId === qna.qid ? null : qna.qid
+                            );
+                          }}
+                        >
+                          {expandedQnAId === qna.qid
+                            ? "Hide Answers"
+                            : "Answers"}
+                        </Button>
+                        <Button
+                          colorScheme="red"
+                          ml="2"
+                          onClick={() => handleDeleteQnA(qna.qid)}
+                        >
+                          Delete
+                        </Button>
+                      </Td>
+                    </Tr>
+                    <Tr className="bg-blue-100">
+                      <Td colSpan="6" p={0}>
+                        <Collapse in={expandedQnAId === qna.qid}>
+                          <Box p={4}>
+                            <Text fontSize="lg" fontWeight="bold">
+                              Answers:
+                            </Text>
+                            <Table variant="simple" size="sm">
+                              <Thead>
+                                <Tr>
+                                  <Th>Answer ID</Th>
+                                  <Th>User ID</Th>
+                                  <Th>Answer</Th>
+                                  <Th>Created At</Th>
+                                  <Th>Updated At</Th>
+                                </Tr>
+                              </Thead>
+                              <Tbody>
+                                {qna.answers.map((answer) => (
+                                  <Tr key={answer.aid}>
+                                    <Td>{answer.aid}</Td>
+                                    <Td>{answer.userID}</Td>
+                                    <Td>{answer.answerName}</Td>
+                                    <td>
+                                      {new Date(
+                                        answer.created_at
+                                      ).toLocaleString()}
+                                    </td>
+                                    <td>
+                                      {new Date(
+                                        answer.updated_at
+                                      ).toLocaleString()}
+                                    </td>
+                                  </Tr>
+                                ))}
+                              </Tbody>
+                            </Table>
+                          </Box>
+                        </Collapse>
+                      </Td>
+                    </Tr>
+                  </React.Fragment>
                 ))
               ) : (
                 <Tr textAlign="center">
-                  <Td colSpan="4" textAlign="center">
+                  <Td colSpan="6" textAlign="center">
                     No QnAs found.
                   </Td>
                 </Tr>
