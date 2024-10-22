@@ -216,7 +216,7 @@ const DisplayQnAPage = () => {
 </Button>
 
 
-          <Table className="min-w-full table-auto border-collapse border border-gray-200">
+          <Table className="min-w-full table-auto border-collapse border border-gray-200 mt-4">
             <Thead>
               <Tr className="bg-blue-500">
                 <Th className="px-4 py-2 border border-gray-300" color="white">
