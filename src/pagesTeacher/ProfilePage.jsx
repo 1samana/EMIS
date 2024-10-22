@@ -75,62 +75,71 @@ const ProfilePage = ({ closeModal }) => { // Accept closeModal as a prop
 
   return (
     <div className="flex items-center justify-center mt-6 bg-gray-100">
-      <div className="bg-white shadow-lg rounded-lg w-full max-w-3xl p-6 flex">
-        {/* Left Side */}
-        <div className="w-1/2 px-6 pt-0 pb-6">
-          <h1 className="text-4xl font-bold text-blue-600">{profile.username}</h1>
-          <span className="text-black">
-            <p className="text-lg text-black">{role}</p>
-          </span>
-          <div className="mt-6">
-            <p className="text-lg text-black">
-              <strong className="text-black">Address:</strong> {profile.address}
-            </p>
-            <p className="text-lg text-black">
-              <strong className="text-black">Phone Number:</strong> {profile.phone_no}
-            </p>
-            <p className="text-lg text-black">
-              <strong className="text-black">Date of Birth:</strong> {profile.DOB}
-            </p>
-            <p className="text-lg text-black">
-              <strong className="text-black">Father's Name:</strong> {profile.Father_name}
-            </p>
-            <p className="text-lg text-black">
-              <strong className="text-black">Mother's Name:</strong> {profile.Mother_name}
-            </p>
-            <p className="text-lg text-black">
-              <strong className="text-black">Parents' Phone Number:</strong> {profile.Parents_phone_no}
-            </p>
+      {role !== "Admin" ? (
+        <div className="bg-white shadow-lg rounded-lg w-full max-w-3xl p-6 flex">
+          {/* Left Side */}
+          <div className="w-1/2 px-6 pt-0 pb-6">
+            <h1 className="text-4xl font-bold text-blue-600">{profile.username}</h1>
+            <span className="text-black">
+              <p className="text-lg text-black">{role}</p>
+            </span>
+            <div className="mt-6">
+              <p className="text-lg text-black">
+                <strong className="text-black">Address:</strong> {profile.address}
+              </p>
+              <p className="text-lg text-black">
+                <strong className="text-black">Phone Number:</strong> {profile.phone_no}
+              </p>
+              <p className="text-lg text-black">
+                <strong className="text-black">Date of Birth:</strong> {profile.DOB}
+              </p>
+              <p className="text-lg text-black">
+                <strong className="text-black">Father's Name:</strong> {profile.Father_name}
+              </p>
+              <p className="text-lg text-black">
+                <strong className="text-black">Mother's Name:</strong> {profile.Mother_name}
+              </p>
+              <p className="text-lg text-black">
+                <strong className="text-black">Parents' Phone Number:</strong> {profile.Parents_phone_no}
+              </p>
+            </div>
+            <div className="mt-6 flex space-x-4">
+              <button
+                onClick={handleEditClick} // Call the function to navigate
+                className="bg-blue-600 text-white py-2 px-4 rounded-lg shadow-md"
+              >
+                Edit Profile
+              </button>
+              <button
+                onClick={handleCreateComplaintClick} // Call the function to navigate
+                className="bg-blue-600 text-white py-2 px-4 rounded-lg shadow-md"
+              >
+                Create Complaint
+              </button>
+            </div>
           </div>
-          <div className="mt-6 flex space-x-4">
-            <button
-              onClick={handleEditClick} // Call the function to navigate
-              className="bg-blue-600 text-white py-2 px-4 rounded-lg shadow-md"
-            >
-              Edit Profile
-            </button>
-            <button
-              onClick={handleCreateComplaintClick} // Call the function to navigate
-              className="bg-blue-600 text-white py-2 px-4 rounded-lg shadow-md"
-            >
-              Create Complaint
-            </button>
-          </div>
-        </div>
 
-        {/* Right Side - Profile */}
-        <div className="w-1/2 flex items-center justify-center relative">
-          <div className="relative">
-            <div className="absolute inset-0 border-t-8 border-r-8 border-blue-600 transform rotate-45"></div>
-            <img
-              src={`${BASE_URL}${profile.Photo}`}
-              onClick={() => window.open(`${BASE_URL}${profile.Photo}`)}
-              alt="Teacher Profile"
-              className="w-48 h-48 object-cover rounded-full z-10 relative border-4 border-blue-600"
-            />
+          {/* Right Side - Profile */}
+          <div className="w-1/2 flex items-center justify-center relative">
+            <div className="relative">
+              <div className="absolute inset-0 border-t-8 border-r-8 border-blue-600 transform rotate-45"></div>
+              <img
+                src={`${BASE_URL}${profile.Photo}`}
+                onClick={() => window.open(`${BASE_URL}${profile.Photo}`)}
+                alt="Teacher Profile"
+                className="w-48 h-48 object-cover rounded-full z-10 relative border-4 border-blue-600"
+              />
+            </div>
           </div>
         </div>
-      </div>
+      ) : (
+        <div className="bg-white shadow-lg rounded-lg w-full max-w-3xl p-6 flex">
+          <div className="w-full text-center">
+            <h1 className="text-4xl font-bold text-blue-600">{profile.username}</h1>
+            <p className="text-lg text-black">{role}</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

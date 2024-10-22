@@ -3,14 +3,15 @@ import { FaSearch } from "react-icons/fa";
 import { AuthContext } from "../context/AuthContext";
 import ProfilePage from "../pagesTeacher/ProfilePage";
 import axios from "axios";
+import nscLogo from "../assets/nsc_logo.png"; // Import the NSC logo from assets
 
 const Topbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [profilePhoto, setProfilePhoto] = useState(null);
+  const [role, setRole] = useState(null); // State to hold the user's role
 
-  const { authToken } = useContext(AuthContext); // State to hold profile photo
-
+  const { authToken } = useContext(AuthContext);
   const { logoutUser } = useContext(AuthContext);
 
   const handleMenuToggle = () => {
@@ -21,7 +22,7 @@ const Topbar = () => {
     setIsOpen(!isOpen);
   };
 
-  // Fetch user profile photo on component mount
+  // Fetch user profile and role on component mount
   useEffect(() => {
     const fetchUserProfile = async () => {
       if (authToken && authToken.access) {
@@ -34,8 +35,8 @@ const Topbar = () => {
 
           const profileData = response.data.profile;
           const photoURL = `http://10.5.15.11:8000${profileData.Photo}`; // Adjust URL according to your backend
-
           setProfilePhoto(photoURL); // Set the profile photo in state
+          setRole(response.data.role); // Set the user's role in state
         } catch (error) {
           console.error("Error fetching profile data:", error);
         }
@@ -43,7 +44,7 @@ const Topbar = () => {
     };
 
     fetchUserProfile();
-  }, []);
+  }, [authToken]);
 
   return (
     <>
@@ -63,10 +64,10 @@ const Topbar = () => {
               className="w-10 h-10 rounded-full focus:outline-none"
               onClick={handleMenuToggle}
             >
-              {/* Dynamically display user profile photo */}
+              {/* Conditionally display user profile photo or NSC logo */}
               <img
-                src={profilePhoto || "https://via.placeholder.com/150"} // Fallback image if no photo is available
-                alt="pp"
+                src={role === "Admin" ? nscLogo : profilePhoto || "https://via.placeholder.com/150"} // Display NSC logo if admin
+                alt="profile"
                 className="w-full h-full rounded-full"
               />
             </button>
@@ -110,8 +111,6 @@ const Topbar = () => {
 
             {/* ProfilePage Content */}
             <div className="p-4">
-              {" "}
-              {/* Adjust padding here */}
               <ProfilePage closeModal={handleViewProfileToggle} />
             </div>
           </div>

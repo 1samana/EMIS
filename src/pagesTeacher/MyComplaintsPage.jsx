@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
+import Swal from "sweetalert2";
 import { AuthContext } from "../context/AuthContext";
 
 const BASE_URL = "http://10.5.15.11:8000";
@@ -19,7 +20,7 @@ const EditModal = ({
     <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
       <div className="bg-white p-6 rounded shadow-lg w-96">
         <h2 className="text-xl font-bold mb-4">Edit Complaint</h2>
-        <form>
+        <form onSubmit={(e) => { e.preventDefault(); onSave(); }}>
           <div className="mb-4">
             <label className="block mb-1">Title</label>
             <input
@@ -58,7 +59,7 @@ const EditModal = ({
             {editFormData.photo && (
               <div className="mt-2">
                 <img
-                  src={`${BASE_URL}${editFormData.photo}`}
+                  src={editFormData.photo}
                   alt="Current photo"
                   className="h-24 w-24 object-cover"
                 />
@@ -74,8 +75,7 @@ const EditModal = ({
               Cancel
             </button>
             <button
-              type="button"
-              onClick={onSave}
+              type="submit"
               className="bg-blue-500 text-white px-3 py-1 rounded"
             >
               Save
@@ -98,9 +98,9 @@ const MyComplaintsPage = () => {
     title: "",
     description: "",
     suggestion: "",
-    photo: null, // For storing the photo URL or file
+    photo: null,
   });
-  const [photoFile, setPhotoFile] = useState(null); // To store the new photo file
+  const [photoFile, setPhotoFile] = useState(null);
 
   const fetchComplaints = async (page) => {
     setLoading(true);
@@ -122,10 +122,10 @@ const MyComplaintsPage = () => {
         `/proxy/roles/complaints/mine/?page=${page}`,
         config
       );
-      console.log("API Response:", response.data);
+     // console.log("API Response:", response.data);
 
-      if (Array.isArray(response.data)) {
-        const sortedComplaints = response.data.sort(
+      if (Array.isArray(response.data.results)) {
+        const sortedComplaints = response.data.results.sort(
           (a, b) => new Date(b.date) - new Date(a.date)
         );
         setComplaints(sortedComplaints);
@@ -135,7 +135,7 @@ const MyComplaintsPage = () => {
       setError(null);
     } catch (error) {
       console.error("Error fetching complaints:", error);
-      setError(error.message || "Failed to fetch complaints");
+      setError(error.response ? error.response.data.results.message : "Failed to fetch complaints");
       setComplaints([]);
     } finally {
       setLoading(false);
@@ -159,9 +159,9 @@ const MyComplaintsPage = () => {
       title: complaint.title,
       description: complaint.description,
       suggestion: complaint.suggestion,
-      photo: complaint.photo, // Existing photo
+      photo: complaint.photo ? `${BASE_URL}${complaint.photo}` : null,
     });
-    setIsModalOpen(true); // Open the modal
+    setIsModalOpen(true);
   };
 
   const saveEdit = async () => {
@@ -172,7 +172,7 @@ const MyComplaintsPage = () => {
       const config = {
         headers: {
           Authorization: `Bearer ${authToken.access}`,
-          "Content-Type": "multipart/form-data", // Ensure the form data is correctly handled
+          "Content-Type": "multipart/form-data",
         },
       };
 
@@ -182,7 +182,7 @@ const MyComplaintsPage = () => {
       formData.append("suggestion", editFormData.suggestion);
 
       if (photoFile) {
-        formData.append("photo", photoFile); // Add the new photo if updated
+        formData.append("photo", photoFile);
       }
 
       const response = await axios.put(
@@ -191,56 +191,66 @@ const MyComplaintsPage = () => {
         config
       );
 
-      const updatedComplaint = response.data; // Assuming the response contains the updated complaint, including the new photo URL
+      const updatedComplaint = response.data.results;
+      const updatedPhotoUrl = `${BASE_URL}${updatedComplaint.photo}?${new Date().getTime()}`;
 
-      // Create cache-busting URL by appending a timestamp to the image URL
-      const updatedPhotoUrl = `${BASE_URL}${
-        updatedComplaint.photo
-      }?${new Date().getTime()}`;
-
-      // Update the complaints list with the updated complaint (including the cache-busted photo URL)
       setComplaints((prevComplaints) =>
         prevComplaints.map((complaint) =>
           complaint.complainID === editComplaintId
-            ? { ...complaint, ...updatedComplaint, photo: updatedPhotoUrl } // Update the complaint with cache-busting URL for the photo
+            ? { ...complaint, ...updatedComplaint, photo: updatedPhotoUrl }
             : complaint
         )
       );
 
       setEditComplaintId(null);
-      setIsModalOpen(false); // Close the modal after saving
+      setIsModalOpen(false);
     } catch (error) {
       console.error("Error editing complaint:", error);
-      setError(error.message || "Failed to edit complaint");
+      setError(error.response ? error.response.data.results.message : "Failed to edit complaint");
     }
   };
 
   const deleteComplaint = async (complaintId) => {
-    try {
-      const tokenString = localStorage.getItem("authToken");
-      const authToken = tokenString ? JSON.parse(tokenString) : null;
+    Swal.fire({
+      title: "Are you sure?",
+      text: "Do you really want to delete this complaint?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "No, cancel",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          const tokenString = localStorage.getItem("authToken");
+          const authToken = tokenString ? JSON.parse(tokenString) : null;
 
-      const config = {
-        headers: {
-          Authorization: `Bearer ${authToken.access}`,
-        },
-      };
+          const config = {
+            headers: {
+              Authorization: `Bearer ${authToken.access}`,
+            },
+          };
 
-      const response = await axios.delete(
-        `/proxy/roles/complaints/delete/${complaintId}/`,
-        config
-      );
-      console.log("Delete Response:", response.data);
+          const response = await axios.delete(
+            `/proxy/roles/complaints/delete/${complaintId}/`,
+            config
+          );
+          //console.log("Delete Response:", response.data);
 
-      setComplaints((prevComplaints) =>
-        prevComplaints.filter(
-          (complaint) => complaint.complainID !== complaintId
-        )
-      );
-    } catch (error) {
-      console.error("Error deleting complaint:", error);
-      setError(error.message || "Failed to delete complaint");
-    }
+          setComplaints((prevComplaints) =>
+            prevComplaints.filter(
+              (complaint) => complaint.complainID !== complaintId
+            )
+          );
+
+          Swal.fire("Deleted!", "Your complaint has been deleted.", "success");
+        } catch (error) {
+          console.error("Error deleting complaint:", error);
+          Swal.fire("Error", "Failed to delete complaint", "error");
+        }
+      }
+    });
   };
 
   useEffect(() => {
@@ -256,87 +266,71 @@ const MyComplaintsPage = () => {
       ) : error ? (
         <p className="text-red-500">{error}</p>
       ) : (
-        <div>
-          {complaints.length === 0 ? (
-            <p>No complaints found.</p>
-          ) : (
-            <table className="min-w-full table-auto border-collapse border border-gray-200">
-              <thead>
-                <tr className="bg-blue-500 text-white text-nowrap ">
-                  <th className="px-4 py-2 border border-gray-300">Title</th>
-                  <th className="px-4 py-2 border border-gray-300">
-                    Description
-                  </th>
-                  <th className="px-4 py-2 border border-gray-300">
-                    Suggestion
-                  </th>
-                  <th className="px-4 py-2 border border-gray-300">Photo</th>
-                  <th className="px-4 py-2 border border-gray-300">Date</th>
-                  <th className="px-4 py-2 border border-gray-300">Status</th>
-                  <th className="px-4 py-2 border border-gray-300">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {complaints.map((complaint) => {
-                  const isSolved = complaint.solved;
+        <table className="min-w-full table-auto border-collapse border border-gray-200">
+          <thead>
+            <tr className="bg-blue-500 text-white">
+              <th className="px-4 py-2 border border-gray-300">Title</th>
+              <th className="px-4 py-2 border border-gray-300">Description</th>
+              <th className="px-4 py-2 border border-gray-300">Suggestion</th>
+              <th className="px-4 py-2 border border-gray-300">Photo</th>
+              <th className="px-4 py-2 border border-gray-300">Date</th>
+              <th className="px-4 py-2 border border-gray-300">Status</th>
+              <th className="px-4 py-2 border border-gray-300">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {complaints.length === 0 ? (
+              <tr>
+                <td colSpan={7} className="text-center">No complaints found.</td>
+              </tr>
+            ) : (
+              complaints.map((complaint) => {
+                const isSolved = complaint.solved;
 
-                  return (
-                    <tr
-                      key={complaint.complainID}
-                      className="bg-white even:bg-gray-100"
-                    >
-                      <td className="px-4 py-2 border border-gray-300">
-                        {complaint.title}
-                      </td>
-                      <td className="px-4 py-2 border border-gray-300">
-                        {complaint.description}
-                      </td>
-                      <td className="px-4 py-2 border border-gray-300">
-                        {complaint.suggestion}
-                      </td>
-                      <td className="px-4 py-2 border border-gray-300 h-20 w-20 overflow-hidden">
-                        <img
-                          src={`${BASE_URL}${complaint.photo}`}
-                          onClick={() =>
-                            window.open(`${BASE_URL}${complaint.photo}`)
-                          }
-                          alt="Complaint"
-                          className="w-full h-full object-cover"
-                        />
-                      </td>
-                      <td className="px-4 py-2 border border-gray-300">
-                        {new Date(complaint.date).toLocaleDateString()}
-                      </td>
-                      <td className="px-4 py-2 border border-gray-300">
-                        {isSolved ? "Solved" : "Pending"}
-                      </td>
-                      <td className="px-4 py-2 flex justify-center items-center">
-                        <button
-                          onClick={() => startEditing(complaint)}
-                          className={`bg-blue-600 text-white px-2 py-1 rounded ${
-                            isSolved ? "opacity-50 cursor-not-allowed" : ""
-                          }`}
-                          disabled={isSolved}
-                        >
-                          Edit
-                        </button>
-                        <button
-                          onClick={() => deleteComplaint(complaint.complainID)}
-                          className={`bg-red-500 text-white px-2 py-1 rounded ml-2 ${
-                            isSolved ? "opacity-50 cursor-not-allowed" : ""
-                          }`}
-                          disabled={isSolved}
-                        >
-                          Delete
-                        </button>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          )}
-        </div>
+                return (
+                  <tr key={complaint.complainID} className="bg-white even:bg-gray-100">
+                    <td className="px-4 py-2 border">{complaint.title}</td>
+                    <td className="px-4 py-2 border">{complaint.description}</td>
+                    <td className="px-4 py-2 border">{complaint.suggestion}</td>
+                    <td className="px-4 py-2 border">
+                      <img
+                        src={`${BASE_URL}${complaint.photo}`}
+                        alt="Complaint"
+                        className="w-20 h-20 object-cover"
+                      />
+                    </td>
+                    <td className="px-4 py-2 border">
+                      {new Date(complaint.date).toLocaleDateString()}
+                    </td>
+                    <td className="px-4 py-2 border">
+                      {isSolved ? "Solved" : "Pending"}
+                    </td>
+                    <td className="px-4 py-2 border">
+                      <button
+                        onClick={() => startEditing(complaint)}
+                        className={`bg-blue-600 text-white px-2 py-1 rounded ${
+                          isSolved ? "opacity-50 cursor-not-allowed" : ""
+                        }`}
+                        disabled={isSolved || editComplaintId !== null}
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => deleteComplaint(complaint.complainID)}
+                        className={`bg-red-500 text-white px-2 py-1 rounded ml-2 ${
+                          isSolved ? "opacity-50 cursor-not-allowed" : ""
+                        }`}
+                        disabled={isSolved}
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })
+            )}
+          </tbody>
+        </table>
       )}
 
       <EditModal
