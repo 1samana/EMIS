@@ -6,58 +6,42 @@ import {
   FormControl,
   FormLabel,
   Textarea,
+  Input,
   useToast,
   Text,
 } from "@chakra-ui/react";
 import { AuthContext } from "../context/AuthContext";
 
 const CreateQnAPage = () => {
-  const [question, setQuestion] = useState("");
-  const [answer, setAnswer] = useState("");
+  const [questionName, setQuestionName] = useState(""); // State for questionName
+  const [subjectID, setSubjectID] = useState(""); // State for subjectID
   const toast = useToast();
+  const { authToken } = useContext(AuthContext);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const questionData = { question };
-    const answerData = { answer };
+    // Prepare data with questionName and subjectID
+    const questionData = { questionName, subjectID }; 
 
-    console.log("Sending question data:", questionData); 
-
-    try {const { authToken } = useContext(AuthContext);
-      console.log("Token:", authToken); 
+    try {
+      console.log("Token:", authToken);
 
       const config = {
         headers: {
           Authorization: `Bearer ${authToken.access}`,
-          "Content-Type": "application/json", 
+          "Content-Type": "application/json",
         },
       };
 
       // Step 1: Create Question
       const questionResponse = await axios.post(
-        `/proxy/roles/community/questions/create/`,
+        `/proxy/roles/community/addQuestion/`,
         questionData,
         config
       );
 
-      console.log("Question created:", questionResponse.data); 
-
-      // Step 2: Create Answer if question was created successfully
-      if (answer) {
-        const questionId = questionResponse.data.id; 
-        answerData.questionId = questionId; 
-
-        console.log("Sending answer data:", answerData); 
-
-        const answerResponse = await axios.post(
-          `/proxy/roles/community/answers/create/`,
-          answerData,
-          config
-        );
-
-        console.log("Answer created:", answerResponse.data); 
-      }
+      console.log("Question created:", questionResponse.data);
 
       // Show success message
       toast({
@@ -69,14 +53,14 @@ const CreateQnAPage = () => {
         isClosable: true,
       });
 
-    
-      setQuestion("");
-      setAnswer("");
+      // Reset fields
+      setQuestionName("");
+      setSubjectID("");
     } catch (error) {
       console.error(
         "Error creating QnA:",
         error.response?.data || error.message
-      ); 
+      );
       toast({
         title: "Error Creating QnA",
         description:
@@ -92,42 +76,41 @@ const CreateQnAPage = () => {
   };
 
   return (
-    
-        <Box
-          maxW="500px"
-          mx="auto"
-          mt="5"
-          p="6"
-          borderWidth="1px"
-          borderRadius="lg"
-          boxShadow="md"
-          bg="white"
-        >
-          <Text fontSize="2xl" mb="4" textAlign="center">
-            Create QnA
-          </Text>
-          <form onSubmit={handleSubmit}>
-            <FormControl isRequired mb="4">
-              <FormLabel>Question</FormLabel>
-              <Textarea
-                value={question}
-                onChange={(e) => setQuestion(e.target.value)}
-                placeholder="Type your question here..."
-              />
-            </FormControl>
-            <FormControl isRequired mb="4">
-              <FormLabel>Answer</FormLabel>
-              <Textarea
-                value={answer}
-                onChange={(e) => setAnswer(e.target.value)}
-                placeholder="Type your answer here..."
-              />
-            </FormControl>
-            <Button type="submit" colorScheme="blue" width="full">
-              Create QnA
-            </Button>
-          </form>
-        </Box>
+    <Box
+      maxW="500px"
+      mx="auto"
+      mt="5"
+      p="6"
+      borderWidth="1px"
+      borderRadius="lg"
+      boxShadow="md"
+      bg="white"
+    >
+      <Text fontSize="2xl" mb="4" textAlign="center">
+        Create QnA
+      </Text>
+      <form onSubmit={handleSubmit}>
+        <FormControl isRequired mb="4">
+          <FormLabel>Subject ID</FormLabel>
+          <Input
+            value={subjectID} // Binding subjectID state
+            onChange={(e) => setSubjectID(e.target.value)}
+            placeholder="Enter the subject ID"
+          />
+        </FormControl>
+        <FormControl isRequired mb="4">
+          <FormLabel>Question Name</FormLabel>
+          <Textarea
+            value={questionName} // Binding questionName state
+            onChange={(e) => setQuestionName(e.target.value)}
+            placeholder="Type your question here..."
+          />
+        </FormControl>
+        <Button type="submit" colorScheme="blue" width="full">
+          Create QnA
+        </Button>
+      </form>
+    </Box>
   );
 };
 
