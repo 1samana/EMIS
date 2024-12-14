@@ -9,6 +9,8 @@ import {
   FaLock,
   FaUserCheck,
   FaUser,
+  FaHamburger,
+  FaCross,
 } from "react-icons/fa";
 import {
   MdGroup,
@@ -19,13 +21,15 @@ import {
   MdAddAlert,
   MdAnnouncement,
   MdAssignment,
+  MdExitToApp,
 } from "react-icons/md";
 import { AiOutlineNotification } from "react-icons/ai";
-import { FiBell } from "react-icons/fi";
+import { FiBell, FiX } from "react-icons/fi";
 import { Link } from "react-router-dom";
 import CreateUserPage from "../pages/CreateUserPage";
 import { IoMdAlert } from "react-icons/io";
 import { AuthContext } from "../context/AuthContext"; // Import AuthContext
+import ProfilePage from "../pagesTeacher/ProfilePage";
 
 const Sidebar = () => {
   const [activityOpen, setActivityOpen] = useState(false);
@@ -34,7 +38,10 @@ const Sidebar = () => {
   const [assignmentOpen, setAssignmentOpen] = useState(false);
   const [qnaOpen, setQnaOpen] = useState(false);
   const [isPermissionOpen, setIsPermissionOpen] = useState(false);
-  const { userRole } = useContext(AuthContext); // Get userRole from context
+  const [isSettingOpen, setIsSettingOpen] = useState(false);
+  const { userRole, isLeftSideBarOpen, handleLeftSideBarToggle } =
+    useContext(AuthContext); // Get userRole from context
+  console.log(isLeftSideBarOpen);
 
   // Toggle functions
   const handleActivityToggle = () => setActivityOpen(!activityOpen);
@@ -43,21 +50,37 @@ const Sidebar = () => {
   const handleAssignmentToggle = () => setAssignmentOpen(!assignmentOpen);
   const handleQnaToggle = () => setQnaOpen(!qnaOpen);
   const handlePermissionToggle = () => setIsPermissionOpen(!isPermissionOpen);
+  const handleSettingToggle = () => setIsSettingOpen(!isSettingOpen);
+
+  const handleViewProfileToggle = () => {
+    setIsOpen(!isOpen);
+  };
 
   return (
     <>
-      <div className="bg-white-900 h-screen min-w-64 px-4 py-4 text-blue-700 sticky top-0 left-0 overflow-y-scroll hide-scrollbar overflow-auto">
+      <div
+        className={`bg-white  h-screen ${
+          isLeftSideBarOpen ? "block" : "hidden"
+        } min-w-full  lg:min-w-64 px-4 py-4 text-blue-700 sticky top-0 left-0 overflow-y-scroll hide-scrollbar overflow-auto z-[999px]`}
+      >
         <div className="flex flex-col mb-6 pb-4 border-b border-gray-300">
-          <Link to="/" className="flex items-center">
-            <img
-              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSbjSnLNj15Y3XFO3rlotSj1BzNU-kqk7Ek_g&s"
-              alt="NSC"
-              className="w-12 h-12 mr-3"
-            />
-            <div className="leading-none">
-              <span className="text-2xl font-bold">EMIS</span>
-              <br />
-              <span className="text-sm">DASHBOARD</span>
+          <Link to="/" className="flex items-center justify-between ">
+            <di className="flex">
+              <img
+                src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSbjSnLNj15Y3XFO3rlotSj1BzNU-kqk7Ek_g&s"
+                alt="NSC"
+                className="w-12 h-12 mr-3"
+              />
+              <div className="leading-none">
+                <span className="text-2xl font-bold">EMIS</span>
+                <br />
+
+                <span className="text-sm">DASHBOARD</span>
+              </div>
+            </di>
+
+            <div className=" p-2 lg:hidden" onClick={handleLeftSideBarToggle}>
+              <FiX size={18} />
             </div>
           </Link>
         </div>
@@ -103,6 +126,12 @@ const Sidebar = () => {
                   className="flex items-center hover:bg-blue-500 hover:text-white p-2 rounded-lg transition-colors"
                 >
                   <MdAddAlert className="mr-3" /> Create Assignment
+                </Link>
+                <Link
+                  to="/my-assignment"
+                  className="flex items-center hover:bg-blue-500 hover:text-white p-2 rounded-lg transition-colors"
+                >
+                  <MdAddAlert className="mr-3" /> My Assignment
                 </Link>
               </>
             )}
@@ -312,22 +341,36 @@ const Sidebar = () => {
                 )}
               </>
             )}
-            <Link
-              to="/settings"
-              className="flex items-center hover:bg-blue-500 hover:text-white p-2 rounded-lg transition-colors"
+            <button
+              className="flex items-center hover:bg-blue-500 hover:text-white p-2 rounded-lg transition-colors "
+              onClick={handleSettingToggle}
             >
               <FaCog className="mr-3" /> Settings
-            </Link>
+            </button>
+            {isSettingOpen && (
+              <div className="flex flex-col space-y-2 pl-8 mt-2 ">
+                <div className="flex items-center hover:bg-blue-500 hover:text-white p-2 rounded-lg transition-colors">
+                  <MdAddAlert className="mr-3" /> Create Role
+                </div>
+
+                <Link
+                  to="#"
+                  className="flex items-center hover:bg-blue-500 hover:text-white p-2 rounded-lg transition-colors"
+                >
+                  <MdExitToApp className="mr-3" /> Create Permission
+                </Link>
+              </div>
+            )}
           </nav>
         </div>
       </div>
 
       {isOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-80">
-          <div className="p-4 rounded-lg max-w-lg w-full bg-white">
+          <div className="p-4 rounded-lg max-w-lg w-full ">
             <button
               onClick={handleCreateUserToggle}
-              className="absolute top-4 right-8 text-black hover:text-gray-700 z-50 text-2xl"
+              className="absolute top-4 right-8 text-white text-3xl hover:text-gray-700 z-50 "
             >
               &times;
             </button>

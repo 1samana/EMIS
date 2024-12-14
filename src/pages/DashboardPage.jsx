@@ -305,15 +305,15 @@ const DashboardPage = () => {
   return (
     <div className="container mx-auto ">
       {/* <h2 className="text-xl font-semibold mb-6">Dashboard Overview</h2> */}
-      <div className="grid grid-cols-3 gap-6 mb-6">
+      <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6 mb-6">
         {/* Total Users Card */}
         <Link
           to="/user/list"
-          className="bg-white p-6 rounded-lg shadow-md border-r-2 border-blue-500 flex justify-between items-center"
+          className="bg-white p-6 rounded-lg shadow-md border-r-2 border-blue-500  justify-between items-center flex-col lg:flex-row"
         >
-          <div>
+          <div className="flex lg:flex-col gap-4 lg:gap-0">
             <h3 className="text-sm font-semibold">Total Users</h3>
-            <p className="text-3xl font-bold">{totalUsers}</p>{" "}
+            <p className="text-sm font-bold lg:font-3xl">{totalUsers}</p>{" "}
           </div>
           {/* Use totalUsers here */}
           <div>
@@ -324,11 +324,13 @@ const DashboardPage = () => {
 
         <Link
           to="/list/complaints"
-          className="bg-white p-6 rounded-lg shadow-md border-r-2 border-blue-500 flex justify-between items-center"
+          className="bg-white p-6 rounded-lg shadow-md border-r-2 border-blue-500  justify-between items-center flex-col lg:flex-row"
         >
-          <div>
-            <h3 className="text-sm font-semibold">Total Complaints</h3>
-            <p className="text-3xl font-bold">{totalComplaints}</p>
+          <div className="flex lg:flex-col gap-4 lg:gap-0">
+            <h3 className="text-sm font-semibold text-nowrap">
+              Total Complaints
+            </h3>
+            <p className="text-sm font-bold lg:font-3xl">{totalComplaints}</p>
           </div>
           <div>
             <p className="text-sm text-gray-500">Solved: {solvedComplaints}</p>
@@ -340,7 +342,7 @@ const DashboardPage = () => {
 
         <Link
           to="/"
-          className="bg-white p-6 rounded-lg shadow-md border-r-2 border-blue-500 flex justify-between items-center"
+          className="bg-white p-6 rounded-lg shadow-md border-r-2 border-blue-500 justify-between items-center hidden lg:flex"
         >
           <div>
             <h3 className="text-sm font-semibold">Total Notices</h3>
@@ -360,7 +362,7 @@ const DashboardPage = () => {
         </Link>
       </div>
 
-      <div className="grid grid-cols-2 gap-6  ">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6  ">
         <div className="bg-white rounded-lg shadow-md p-4 ">
           <h3 className="text-lg font-semibold mb-4">Complaints Trend</h3>
           <div className="h-64">

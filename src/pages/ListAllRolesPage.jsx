@@ -12,7 +12,6 @@ function ListAllRolesPage() {
   const [permissionData, setPermissionData] = useState({});
   const [roleName, setRoleName] = useState("");
   const [updateRoleData, setUpdateRoleData] = useState({});
-
   const { authToken } = useContext(AuthContext);
   const toast = useToast();
 
@@ -22,12 +21,14 @@ function ListAllRolesPage() {
       permissionId,
       permissionName,
     });
-    // console.log(permissionId, permissionName);
-    return;
+    console.log("Toggle Popup:", permissionId, permissionName); // Debugging
   }
 
-  const fetchRoles = async () => {
-    // const newToken = JSON.parse(localStorage.getItem("newToken"));
+  async function fetchRoles() {
+    if (!authToken || !authToken.access) {
+      console.error("Auth token is missing or invalid."); // Debugging
+      return;
+    }
 
     const config = {
       headers: {
@@ -42,19 +43,22 @@ function ListAllRolesPage() {
         config
       );
       if (result && result.data) {
-        // console.log(result.data);
+        console.log("Fetched Roles Data:", result.data); // Debugging
         setData(result.data);
       }
     } catch (err) {
-      console.log(err);
+      console.error(
+        "Error fetching roles:",
+        err.response ? err.response.data : err.message
+      ); // Enhanced error logging
     }
-  };
+  }
 
   useEffect(() => {
-    fetchRoles();
-  }, []);
-
-  //function for update role
+    if (authToken) {
+      fetchRoles();
+    }
+  }, [authToken]);
 
   function toggleUpdate(permissionId, permissionName, roleName) {
     setUpdateRolePopUp(!updateRolePopUp);
@@ -63,23 +67,29 @@ function ListAllRolesPage() {
       permissionName,
     });
     setRoleName(roleName);
+    console.log("Toggle Update:", permissionId, permissionName, roleName); // Debugging
   }
 
-  //function for deleting role
   async function handleDelete(id) {
-    try {
-      const config = {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${authToken.access}`,
-        },
-      };
+    if (!authToken || !authToken.access) {
+      console.error("Auth token is missing or invalid."); // Debugging
+      return;
+    }
 
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${authToken.access}`,
+      },
+    };
+
+    try {
       const result = await axios.delete(
         `/proxy/roles/delete_role/${id}/`,
         config
       );
       if (result && result.data) {
+        console.log("Deleted Role:", id, result.data); // Debugging
         toast({
           title: result.data.msg,
           status: "success",
@@ -88,10 +98,12 @@ function ListAllRolesPage() {
           isClosable: true,
         });
         setData(data.filter((item) => item.role_id !== id));
-        return;
       }
     } catch (err) {
-      console.log(err);
+      console.error(
+        "Error deleting role:",
+        err.response ? err.response.data : err.message
+      ); // Enhanced error logging
     }
   }
 
@@ -101,80 +113,78 @@ function ListAllRolesPage() {
         <div className="flex-grow bg-gray-100 min-h-screen">
           <div className="px-6">
             <div className="container mx-auto">
-              <div className="container mx-auto">
-                <div className="overflow-x-auto shadow-lg rounded-lg">
-                  <table className="min-w-full table-auto border-collapse border border-gray-200">
-                    <thead>
-                      <tr className="w-full bg-blue-500 text-white uppercase text-sm leading-normal">
-                        <th className="px-4 py-2 border border-gray-300">
-                          Role ID
-                        </th>
-                        <th className="px-4 py-2 border border-gray-300">
-                          Role Name
-                        </th>
-                        <th className="px-4 py-2 border border-gray-300">
-                          Actions
-                        </th>
+              <div className="overflow-x-auto shadow-lg rounded-lg">
+                <table className="min-w-full table-auto border-collapse border border-gray-200">
+                  <thead>
+                    <tr className="w-full bg-blue-500 text-white uppercase text-sm leading-normal">
+                      <th className="px-4 py-2 border border-gray-300">
+                        Role ID
+                      </th>
+                      <th className="px-4 py-2 border border-gray-300">
+                        Role Name
+                      </th>
+                      <th className="px-4 py-2 border border-gray-300">
+                        Actions
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="text-gray-600 text-sm font-light">
+                    {data.map((item) => (
+                      <tr
+                        key={item.role_id}
+                        className="border-b border-gray-200 bg-white even:bg-gray-200"
+                      >
+                        <td className="py-3 px-6 text-left font-semibold text-md border border-gray-300">
+                          {item.role_id}
+                        </td>
+                        <td className="py-3 px-6 text-left font-semibold text-md border border-gray-300">
+                          {item.name}
+                        </td>
+                        <td className="py-3 px-6 text-left font-semibold text-md border border-gray-300">
+                          <div className="flex justify-center gap-4">
+                            <button
+                              onClick={() =>
+                                togglePopup(
+                                  item.role_permissions.map(
+                                    (permission) => permission.permission_id
+                                  ),
+                                  item.role_permissions.map(
+                                    (permission) => permission.name
+                                  )
+                                )
+                              }
+                              className="bg-blue-500 text-white font-semibold px-4 py-2 rounded-md transition duration-300 hover:bg-blue-600"
+                            >
+                              View Permissions
+                            </button>
+                            <button
+                              onClick={() =>
+                                toggleUpdate(
+                                  item.role_permissions.map(
+                                    (permission) => permission.permission_id
+                                  ),
+                                  item.role_permissions.map(
+                                    (permission) => permission.name
+                                  ),
+                                  item.name
+                                )
+                              }
+                              className="bg-gray-500 text-white font-semibold px-4 py-2 rounded-md w-24 transition duration-300 hover:bg-gray-600"
+                            >
+                              Update
+                            </button>
+                            <button
+                              onClick={() => handleDelete(item.role_id)}
+                              className="bg-red-500 text-white font-semibold px-4 py-2 rounded-md w-24 transition duration-300 hover:bg-red-600"
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        </td>
                       </tr>
-                    </thead>
-                    <tbody className="text-gray-600 text-sm font-light">
-                      {data.map((item) => (
-                        <tr
-                          key={item.role_id}
-                          className="border-b border-gray-200  bg:white even:bg-gray-200"
-                        >
-                          <td className="py-3 px-6 text-left font-semibold text-md border border-gray-300">
-                            {item.role_id}
-                          </td>
-                          <td className="py-3 px-6 text-left font-semibold text-md border border-gray-300">
-                            {item.name}
-                          </td>
-                          <td className="py-3 px-6 text-left font-semibold text-md border border-gray-300">
-                            <div className="flex justify-center gap-4">
-                              <button
-                                onClick={() =>
-                                  togglePopup(
-                                    item.role_permissions.map(
-                                      (item) => item.permission_id
-                                    ),
-                                    item.role_permissions.map(
-                                      (item) => item.name
-                                    )
-                                  )
-                                }
-                                className="bg-blue-500 text-white font-semibold px-4 py-2 rounded-md  transition duration-300 hover:bg-blue-600"
-                              >
-                                View Permissions
-                              </button>
-                              <button
-                                onClick={() =>
-                                  toggleUpdate(
-                                    item.role_permissions.map(
-                                      (item) => item.permission_id
-                                    ),
-                                    item.role_permissions.map(
-                                      (item) => item.name
-                                    ),
-                                    item.name
-                                  )
-                                }
-                                className="bg-gray-500 text-white font-semibold px-4 py-2 rounded-md w-24 transition duration-300 hover:bg-gray-600"
-                              >
-                                Update
-                              </button>
-                              <button
-                                onClick={() => handleDelete(item.role_id)}
-                                className="bg-red-500 text-white font-semibold px-4 py-2 rounded-md w-24 transition duration-300 hover:bg-red-600"
-                              >
-                                Delete
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
+                    ))}
+                  </tbody>
+                </table>
               </div>
             </div>
           </div>
@@ -189,9 +199,7 @@ function ListAllRolesPage() {
           >
             &#x2715;
           </div>
-          <div>
-            <ViewPermissionsPop permissionData={permissionData} />
-          </div>
+          <ViewPermissionsPop permissionData={permissionData} />
         </div>
       )}
 
@@ -203,12 +211,7 @@ function ListAllRolesPage() {
           >
             &#x2715;
           </div>
-          <div>
-            <UpdateRolePop
-              roleName={roleName}
-              updateRoleData={updateRoleData}
-            />
-          </div>
+          <UpdateRolePop roleName={roleName} updateRoleData={updateRoleData} />
         </div>
       )}
     </>

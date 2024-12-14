@@ -4,6 +4,9 @@ import { AuthContext } from "../context/AuthContext";
 import ProfilePage from "../pagesTeacher/ProfilePage";
 import axios from "axios";
 import nscLogo from "../assets/nsc_logo.png"; // Import the NSC logo from assets
+import { HamburgerIcon } from "@chakra-ui/icons";
+import { FiMenu, FiX } from "react-icons/fi";
+import { MdLogout } from "react-icons/md";
 
 const Topbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -11,7 +14,8 @@ const Topbar = () => {
   const [profilePhoto, setProfilePhoto] = useState(null);
   const [role, setRole] = useState(null); // State to hold the user's role
 
-  const { authToken } = useContext(AuthContext);
+  const { authToken, handleLeftSideBarToggle, isLeftSideBarOpen, userName } =
+    useContext(AuthContext);
   const { logoutUser } = useContext(AuthContext);
 
   const handleMenuToggle = () => {
@@ -48,17 +52,22 @@ const Topbar = () => {
 
   return (
     <>
-      <div className="flex justify-between items-center bg-white shadow px-6 py-4">
-        <div className="relative flex items-center">
-          <FaSearch className="absolute left-3 text-gray-400" />
-          <input
-            type="text"
-            placeholder="Search"
-            className="border rounded-md px-10 pl-10 py-2 focus:outline-none"
-          />
+      {/* This is the top bar for mobile or small devices */}
+      <div className="w-full bg-white  flex items-center justify-between p-4 lg:px-10 shadow-md ">
+        <div
+          className="relative flex items-center cursor-pointer p-2 bg-gray-200/80 rounded-full hover:scale-110 transition-all duration-700"
+          onClick={handleLeftSideBarToggle}
+        >
+          {isLeftSideBarOpen ? <FiX size={24} /> : <FiMenu size={24} />}
         </div>
-
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center space-x-4 ">
+          <p>
+            Hello{" "}
+            <span className="font-semibold text-md text-blue-700">
+              {userName || "User"}
+            </span>
+            !
+          </p>
           <div className="relative">
             <button
               className="w-10 h-10 rounded-full focus:outline-none"
@@ -66,13 +75,17 @@ const Topbar = () => {
             >
               {/* Conditionally display user profile photo or NSC logo */}
               <img
-                src={role === "Admin" ? nscLogo : profilePhoto || "https://via.placeholder.com/150"} // Display NSC logo if admin
+                src={
+                  role === "Admin"
+                    ? nscLogo
+                    : profilePhoto || "https://via.placeholder.com/150"
+                } // Display NSC logo if admin
                 alt="profile"
                 className="w-full h-full rounded-full"
               />
             </button>
             {menuOpen && (
-              <div className="absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-md border border-gray-200">
+              <div className="absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-md border border-gray-200 z-[999]">
                 <ul className="py-1">
                   <li>
                     <a
@@ -83,12 +96,12 @@ const Topbar = () => {
                     </a>
                   </li>
                   <li>
-                    <a
+                    <span
                       onClick={logoutUser}
-                      className="block px-4 py-2 text-gray-700 hover:bg-gray-100 cursor-pointer"
+                      className="px-4 py-2 text-gray-700 hover:bg-gray-100 cursor-pointer w-full flex items-center"
                     >
-                      Logout
-                    </a>
+                      <MdLogout /> <span className="ml-2">Logout</span>
+                    </span>
                   </li>
                 </ul>
               </div>
@@ -96,6 +109,13 @@ const Topbar = () => {
           </div>
         </div>
       </div>
+
+      {/* This is the top bar for desktop or large devices */}
+      {/* <div className={` justify-between items-center bg-white shadow px-6 py-4 hidden lg:flex`}>
+        
+
+        
+      </div> */}
 
       {isOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">

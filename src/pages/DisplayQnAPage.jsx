@@ -16,7 +16,7 @@ import {
 } from "@chakra-ui/react";
 import { ChevronUpIcon, ChevronDownIcon } from "@chakra-ui/icons";
 import { AuthContext } from "../context/AuthContext";
-import LoadingGif from "../assets/news-loading.gif";
+import LoadingGif from "../assets/loading-gif.gif";
 
 const DisplayQnAPage = () => {
   const [qnas, setQnas] = useState([]);
@@ -24,7 +24,7 @@ const DisplayQnAPage = () => {
   const [error, setError] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [answerName, setAnswerName] = useState(""); // State for questionName
-  
+
   const [expandedQnAId, setExpandedQnAId] = useState(null);
   const [userID, setUserID] = useState("");
   const [subjectID, setSubjectID] = useState("");
@@ -40,8 +40,11 @@ const DisplayQnAPage = () => {
     };
 
     try {
-      const response = await axios.get(`/proxy/roles/community/getdata/`, config);
-      setQnas(response.data);
+      const response = await axios.get(
+        `/proxy/roles/community/getdata/`,
+        config
+      );
+      setQnas(response.data.results);
       setError("");
     } catch (error) {
       setError("Failed to fetch QnAs.");
@@ -56,8 +59,6 @@ const DisplayQnAPage = () => {
       setLoading(false);
     }
   };
-
-  
 
   const handleFilterQuestions = async () => {
     setLoading(true);
@@ -119,58 +120,58 @@ const DisplayQnAPage = () => {
     }
   };
   const handleAddAnswer = async (qid) => {
-  const answerData = { answerName, qid}; 
+    const answerData = { answerName, qid };
 
-  try {
-    console.log("Token:", authToken);
+    try {
+      console.log("Token:", authToken);
 
-    const config = {
-      headers: {
-        Authorization: `Bearer ${authToken.access}`,
-        "Content-Type": "application/json",
-      },
-    };
+      const config = {
+        headers: {
+          Authorization: `Bearer ${authToken.access}`,
+          "Content-Type": "application/json",
+        },
+      };
 
-    // Step 1: Create Question
-    const answerResponse = await axios.post(
-      `/proxy/roles/community/addAnswer/`,
-      answerData,
-      config
-    );
+      // Step 1: Create Question
+      const answerResponse = await axios.post(
+        `/proxy/roles/community/answers/create/`,
+        answerData,
+        config
+      );
 
-    console.log("Question created:", answerResponse.data);
+      console.log("Question created:", answerResponse.data);
 
-    // Show success message
-    toast({
-      title: "QnA Created",
-      description: "QnA has been created successfully!",
-      status: "success",
-      position: "top-right",
-      duration: 3000,
-      isClosable: true,
-    });
+      // Show success message
+      toast({
+        title: "QnA Created",
+        description: "QnA has been created successfully!",
+        status: "success",
+        position: "top-right",
+        duration: 3000,
+        isClosable: true,
+      });
 
-    // Reset fields
-    setAnswerName("");
-    setqid("");
-  } catch (error) {
-    console.error(
-      "Error creating QnA:",
-      error.response?.data || error.message
-    );
-    toast({
-      title: "Error Creating QnA",
-      description:
-        error.response?.data?.message ||
-        error.message ||
-        "An error occurred while creating the QnA.",
-      status: "error",
-      position: "top-right",
-      duration: 3000,
-      isClosable: true,
-    });
-  }
-};
+      // Reset fields
+      setAnswerName("");
+      // setqid("");
+    } catch (error) {
+      console.error(
+        "Error creating QnA:",
+        error.response?.data || error.message
+      );
+      toast({
+        title: "Error Creating QnA",
+        description:
+          error.response?.data?.message ||
+          error.message ||
+          "An error occurred while creating the QnA.",
+        status: "error",
+        position: "top-right",
+        duration: 3000,
+        isClosable: true,
+      });
+    }
+  };
 
   const handleDownvote = async (qid) => {
     const config = {
@@ -210,7 +211,10 @@ const DisplayQnAPage = () => {
       },
     };
     try {
-      await axios.delete(`/proxy/roles/community/deleteQuestion/${id}/`, config);
+      await axios.delete(
+        `/proxy/roles/community/questions/delete/${id}/`,
+        config
+      );
       fetchQnAs();
       toast({
         title: "QnA Deleted",
@@ -223,7 +227,9 @@ const DisplayQnAPage = () => {
     } catch (error) {
       toast({
         title: "Error Deleting QnA",
-        description: error.response?.data?.message || "An error occurred while deleting the QnA.",
+        description:
+          error.response?.data?.error ||
+          "An error occurred while deleting the QnAs.",
         status: "error",
         position: "top-right",
         duration: 3000,
@@ -242,8 +248,8 @@ const DisplayQnAPage = () => {
 
   if (loading) {
     return (
-      <Flex direction="column" align="center" justify="center" height="100vh">
-        <img src={LoadingGif} alt="Loading..." />
+      <Flex direction="column" align="center" justify="center" height="75vh">
+        <img src={LoadingGif} alt="Loading..." className="h-16 w-16" />
         <Text fontSize="lg">Loading QnAs...</Text>
       </Flex>
     );
@@ -251,68 +257,68 @@ const DisplayQnAPage = () => {
 
   return (
     <Box p="6">
-    {/* Flex container for horizontal filtering */}
-    <Flex
-      mb="4"
-      alignItems="center"
-      gap="4"
-      direction={{ base: "column", md: "row" }}
-    >
-      <FormControl flex="1">
+      {/* Flex container for horizontal filtering */}
+      <Flex
+        mb="4"
+        alignItems="center"
+        gap="4"
+        direction={{ base: "column", md: "row" }}
+      >
+        <FormControl flex="1">
+          <Input
+            placeholder="Enter User ID"
+            value={userID}
+            onChange={(e) => setUserID(e.target.value)}
+            backgroundColor="white"
+            borderColor="gray.300"
+            _hover={{ borderColor: "gray.500" }}
+            _focus={{ borderColor: "teal.500" }}
+            padding="6"
+            borderRadius="md"
+          />
+        </FormControl>
+
+        <FormControl flex="1">
+          <Input
+            placeholder="Enter Subject ID"
+            value={subjectID}
+            onChange={(e) => setSubjectID(e.target.value)}
+            backgroundColor="white"
+            borderColor="gray.300"
+            _hover={{ borderColor: "gray.500" }}
+            _focus={{ borderColor: "teal.500" }}
+            padding="6"
+            borderRadius="md"
+          />
+        </FormControl>
+
         <Input
-          placeholder="Enter User ID"
-          value={userID}
-          onChange={(e) => setUserID(e.target.value)}
+          placeholder="Search QnAs..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
           backgroundColor="white"
+          flex="2"
           borderColor="gray.300"
           _hover={{ borderColor: "gray.500" }}
           _focus={{ borderColor: "teal.500" }}
           padding="6"
           borderRadius="md"
         />
-      </FormControl>
+      </Flex>
 
-      <FormControl flex="1">
-        <Input
-          placeholder="Enter Subject ID"
-          value={subjectID}
-          onChange={(e) => setSubjectID(e.target.value)}
-          backgroundColor="white"
-          borderColor="gray.300"
-          _hover={{ borderColor: "gray.500" }}
-          _focus={{ borderColor: "teal.500" }}
-          padding="6"
-          borderRadius="md"
-        />
-      </FormControl>
-
-      <Input
-        placeholder="Search QnAs..."
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-        backgroundColor="white"
-        flex="2"
-        borderColor="gray.300"
-        _hover={{ borderColor: "gray.500" }}
-        _focus={{ borderColor: "teal.500" }}
-        padding="6"
-        borderRadius="md"
-      />
-    </Flex>
-
-    <Button
-      bg="blue.600"
-      color="white"
-      _hover={{ bg: "blue.700" }}
-      _active={{ bg: "blue.800" }}
-      onClick={handleFilterQuestions}
-      size="lg"
-      boxShadow="lg"
-      paddingX="8"
-      marginBottom={"6"}
-    >
-      Filter Questions
-    </Button>
+      <Button
+        bg="blue.600"
+        color="white"
+        _hover={{ bg: "blue.700" }}
+        _active={{ bg: "blue.800" }}
+        onClick={handleFilterQuestions}
+        size="lg"
+        boxShadow="lg"
+        paddingX="8"
+        marginBottom={"6"}
+      >
+        Filter Questions
+      </Button>
 
       {error && <Text color="red.500">{error}</Text>}
 
@@ -342,43 +348,56 @@ const DisplayQnAPage = () => {
                 >
                   {expandedQnAId === qna.qid ? "Hide Answers" : "Show Answers"}
                 </Button>
+
+                <Button size="sm" ml="2" mt="2" colorScheme="green">
+                  Update
+                </Button>
                 <Button
                   size="sm"
                   ml="2"
+                  mt="2"
                   colorScheme="red"
                   onClick={() => handleDeleteQnA(qna.qid)}
                 >
                   Delete
                 </Button>
+
                 <Collapse in={expandedQnAId === qna.qid} animateOpacity>
                   <Box mt="4">
                     <Text fontWeight="bold">Answers:</Text>
-                    {qna.answers.map((answer) => (
-                      <Box key={answer.aid} p="2" bg="gray.50" my="2">
-                        <Flex alignItems="center">
-                          <VStack mr="4">
-                            <IconButton
-                              size="sm"
-                              icon={<ChevronUpIcon />}
-                              onClick={() => handleUpvote(answer.aid)}
-                            />
-                            <Text>{answer.votes}</Text>
-                            <IconButton
-                              size="sm"
-                              icon={<ChevronDownIcon />}
-                              onClick={() => handleDownvote(answer.aid)}
-                            />
-                          </VStack>
-                          <Box flex="1">
-                            <Text>{answer.answerName}</Text>
-                            <Text fontSize="sm" color="gray.500">
-                              Answered by {answer.userID} on{" "}
-                              {new Date(answer.created_at).toLocaleString()}
-                            </Text>
-                          </Box>
-                        </Flex>
-                      </Box>
-                    ))}
+                    <Box
+                      maxHeight="300px" // Set a fixed height for the answers section
+                      overflowY="auto" // Add vertical scrollbar when content overflows
+                      bg="gray.50"
+                      p="2"
+                    >
+                      {qna.answers.map((answer) => (
+                        <Box key={answer.aid} p="2" my="2">
+                          <Flex alignItems="center">
+                            <VStack mr="4">
+                              <IconButton
+                                size="sm"
+                                icon={<ChevronUpIcon />}
+                                onClick={() => handleUpvote(answer.aid)}
+                              />
+                              <Text>{answer.votes}</Text>
+                              <IconButton
+                                size="sm"
+                                icon={<ChevronDownIcon />}
+                                onClick={() => handleDownvote(answer.aid)}
+                              />
+                            </VStack>
+                            <Box flex="1">
+                              <Text>{answer.answerName}</Text>
+                              <Text fontSize="sm" color="gray.500">
+                                Answered by {answer.userID} on{" "}
+                                {new Date(answer.created_at).toLocaleString()}
+                              </Text>
+                            </Box>
+                          </Flex>
+                        </Box>
+                      ))}
+                    </Box>
 
                     {/* New answer input section */}
                     <FormControl mt="4">

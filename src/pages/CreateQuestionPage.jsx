@@ -22,7 +22,7 @@ const CreateQnAPage = () => {
     e.preventDefault();
 
     // Prepare data with questionName and subjectID
-    const questionData = { questionName, subjectID }; 
+    const questionData = { questionName, subjectID };
 
     try {
       console.log("Token:", authToken);
@@ -36,7 +36,7 @@ const CreateQnAPage = () => {
 
       // Step 1: Create Question
       const questionResponse = await axios.post(
-        `/proxy/roles/community/addQuestion/`,
+        `/proxy/roles/community/questions/create/`,
         questionData,
         config
       );

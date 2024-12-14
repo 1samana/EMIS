@@ -54,7 +54,7 @@ import { AuthContext } from "../context/AuthContext";
 const customStyles = {
   menu: (provider) => ({
     ...provider,
-    maxHeight: "150px",
+    maxHeight: "auto",
     overflowY: "auto",
   }),
 };

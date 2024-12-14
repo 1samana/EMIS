@@ -40,8 +40,8 @@ function CreateUserPage() {
 
         {/* <Topbar /> */}
         <div className="px-6">
-          <div className="flex justify-center items-center min-h-screen my-2 w-full">
-            <div className="bg-white shadow-lg rounded-lg w-full overflow-hidden pb-8 ">
+          <div className="flex  justify-center items-center min-h-screen my-2 w-full ">
+            <div className=" shadow-lg rounded-lg w-full overflow-hidden pb-8 bg-white">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 1440 320"

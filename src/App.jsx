@@ -25,6 +25,7 @@ import MyComplaintsPage from "./pagesTeacher/MyComplaintsPage";
 import EditProfile from "./components/EditProfile";
 import ProfilePage from "./pagesTeacher/ProfilePage";
 import ListPermissionPage from "./pages/ListPermissionPage";
+import MyAssignmentPage from "./pagesTeacher/MyAssignmentPage";
 
 function App() {
   const { userRole, authToken } = useContext(AuthContext);
@@ -181,6 +182,15 @@ function App() {
     return (
       <Routes>
         <Route
+          path="/"
+          element={
+            <PrivateRoute>
+              <DashboardPage />
+            </PrivateRoute>
+          }
+        />
+
+        <Route
           path="/list-notice"
           element={
             <PrivateRoute>
@@ -252,6 +262,15 @@ function App() {
             </PrivateRoute>
           }
         />
+        <Route
+          path="/my-assignment"
+          element={
+            <PrivateRoute>
+              <MyAssignmentPage />
+            </PrivateRoute>
+          }
+        />
+
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     );

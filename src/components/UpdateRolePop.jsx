@@ -99,7 +99,7 @@ const UpdateRolePop = ({ roleName, updateRoleData }) => {
   // Function to handle updating the role
   const handleUpdate = async () => {
     const permissionObject = selectedOptions.reduce((acc, val) => {
-      acc[val.label] = true;
+      acc[val.label] = 1 ;
       return acc;
     }, {});
 

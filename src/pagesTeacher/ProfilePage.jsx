@@ -4,7 +4,8 @@ import { useNavigate } from "react-router-dom"; // Import useNavigate
 
 const BASE_URL = "http://10.5.15.11:8000";
 
-const ProfilePage = ({ closeModal }) => { // Accept closeModal as a prop
+const ProfilePage = ({ closeModal }) => {
+  // Accept closeModal as a prop
   const navigate = useNavigate(); // Initialize the useNavigate hook
   const [profileData, setProfileData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -75,32 +76,40 @@ const ProfilePage = ({ closeModal }) => { // Accept closeModal as a prop
 
   return (
     <div className="flex items-center justify-center mt-6 bg-gray-100">
-      {role !== "Admin" ? (
+      {role !== "admin" ? (
         <div className="bg-white shadow-lg rounded-lg w-full max-w-3xl p-6 flex">
           {/* Left Side */}
           <div className="w-1/2 px-6 pt-0 pb-6">
-            <h1 className="text-4xl font-bold text-blue-600">{profile.username}</h1>
+            <h1 className="text-4xl font-bold text-blue-600 text-nowrap">
+              {profile.username}
+            </h1>
             <span className="text-black">
               <p className="text-lg text-black">{role}</p>
             </span>
             <div className="mt-6">
               <p className="text-lg text-black">
-                <strong className="text-black">Address:</strong> {profile.address}
+                <strong className="text-black">Address:</strong>{" "}
+                {profile.address}
               </p>
               <p className="text-lg text-black">
-                <strong className="text-black">Phone Number:</strong> {profile.phone_no}
+                <strong className="text-black">Phone Number:</strong>{" "}
+                {profile.phone_no}
               </p>
               <p className="text-lg text-black">
-                <strong className="text-black">Date of Birth:</strong> {profile.DOB}
+                <strong className="text-black">Date of Birth:</strong>{" "}
+                {profile.DOB}
               </p>
               <p className="text-lg text-black">
-                <strong className="text-black">Father's Name:</strong> {profile.Father_name}
+                <strong className="text-black">Father's Name:</strong>{" "}
+                {profile.Father_name}
               </p>
               <p className="text-lg text-black">
-                <strong className="text-black">Mother's Name:</strong> {profile.Mother_name}
+                <strong className="text-black">Mother's Name:</strong>{" "}
+                {profile.Mother_name}
               </p>
               <p className="text-lg text-black">
-                <strong className="text-black">Parents' Phone Number:</strong> {profile.Parents_phone_no}
+                <strong className="text-black">Parents' Phone Number:</strong>{" "}
+                {profile.Parents_phone_no}
               </p>
             </div>
             <div className="mt-6 flex space-x-4">
@@ -126,8 +135,8 @@ const ProfilePage = ({ closeModal }) => { // Accept closeModal as a prop
               <img
                 src={`${BASE_URL}${profile.Photo}`}
                 onClick={() => window.open(`${BASE_URL}${profile.Photo}`)}
-                alt="Teacher Profile"
-                className="w-48 h-48 object-cover rounded-full z-10 relative border-4 border-blue-600"
+                alt="Profile pic"
+                className="w-48 h-48 object-cover rounded-full z-10 relative border-4 border-blue-600 bg-gray-400/20 flex justify-center items-center"
               />
             </div>
           </div>
@@ -135,7 +144,9 @@ const ProfilePage = ({ closeModal }) => { // Accept closeModal as a prop
       ) : (
         <div className="bg-white shadow-lg rounded-lg w-full max-w-3xl p-6 flex">
           <div className="w-full text-center">
-            <h1 className="text-4xl font-bold text-blue-600">{profile.username}</h1>
+            <h1 className="text-4xl font-bold text-blue-600">
+              {profile.username}
+            </h1>
             <p className="text-lg text-black">{role}</p>
           </div>
         </div>

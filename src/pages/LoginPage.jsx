@@ -24,7 +24,7 @@ function LoginPage() {
   return (
     <div className="h-screen flex">
       <div
-        className="w-1/2 bg-cover bg-center flex justify-center items-center relative"
+        className="w-1/2 bg-cover bg-center  justify-center items-center relative hidden lg:flex"
         style={{ backgroundImage: `url(${bgImage})` }}
       >
         <div className="absolute top-36 left-12 text-white text-4xl font-bold">
@@ -44,8 +44,8 @@ function LoginPage() {
       </div>
 
       {/* Right Section: Form */}
-      <div className="w-1/2 flex flex-col justify-center items-center p-12 bg-white">
-        <h2 className="text-3xl font-bold text-gray-800 mb-6 text-center">
+      <div className="w-full lg:w-1/2 flex flex-col justify-center items-center p-6 lg:p-12 mix-blend-plus-darker bg-no-repeat bg-cover " style={{ backgroundImage: `url(${bgImage})`, backgroundPosition:"center", }}>
+        <h2 className="text-3xl font-bold text-white  lg:text-gray-800 mb-6 text-center ">
           Sign In to EMIS
         </h2>
 
@@ -53,7 +53,7 @@ function LoginPage() {
           <div>
             <label
               htmlFor="email"
-              className="text-sm font-medium text-gray-600 mb-1"
+              className="text-sm font-medium text-white lg:text-gray-600 mb-1"
             >
               Email Address
             </label>
@@ -74,7 +74,7 @@ function LoginPage() {
           <div>
             <label
               htmlFor="password"
-              className="text-sm font-medium text-gray-600 mb-1"
+              className="text-sm font-medium text-white lg: text-gray-600 mb-1"
             >
               Password
             </label>

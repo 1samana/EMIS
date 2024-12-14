@@ -23,6 +23,9 @@ export const AuthContextProvider = ({ children }) => {
       : null
   );
   const [userRole, setUserRole] = useState("");
+  const [userIdLogin, setUserIdLogin] = useState("");
+  const [isLeftSideBarOpen, setIsLeftSideBarOpen] = useState(true);
+  const [userName, setUserName] = useState("");
 
   console.log(authToken);
   // function for handleLogin
@@ -76,6 +79,9 @@ export const AuthContextProvider = ({ children }) => {
         }
         setUserData(jwtDecode(result.data.data.access));
         setAuthToken(result.data.data);
+        setUserRole(result.data.roleId);
+        setUserName(result.data.name);
+        setUserIdLogin(result.data.userId);
         navigate("/");
 
         toast({
@@ -217,6 +223,8 @@ export const AuthContextProvider = ({ children }) => {
                 //localStorage.removeItem("newToken");
                 setAuthToken(null);
                 setUserData(null);
+                setUserName("");
+                setUserRole("");
                 navigate("/login");
                 toast.closeAll(); // Close all toasts if user confirms
               }}
@@ -293,15 +301,22 @@ export const AuthContextProvider = ({ children }) => {
       if (result && result.data) {
         // console.log(result.data.role);
         setUserRole(result.data.role);
+        setUserName(result.data.profile.username);
+        console.log(result.data.role);
       }
     } catch (err) {
       console.log(err);
     }
   }
 
+  //function to toggle left side bar for small screen
+
+  const handleLeftSideBarToggle = () => {
+    setIsLeftSideBarOpen(!isLeftSideBarOpen);
+  };
+
   useEffect(() => {
     checkUser();
-    return () => {};
   }, []);
 
   //function to toggle Popup box
@@ -320,10 +335,15 @@ export const AuthContextProvider = ({ children }) => {
     logoutUser,
     handleToggle,
     checkUser,
+    handleLeftSideBarToggle,
+    setIsLeftSideBarOpen,
     //variables here
     authToken,
     userData,
     userRole,
+    userIdLogin,
+    isLeftSideBarOpen,
+    userName,
   };
 
   return (
